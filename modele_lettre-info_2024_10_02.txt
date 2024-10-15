@@ -1,0 +1,28 @@
+From: R2i-Grout <raphael.grout@mailo.fr>
+To: [DESTINATAIRE]
+Subject: Lettre d'information du 02/10/2024
+MIME-Version: 1.0
+Content-Type: text/html; charset="utf-8"
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   			<style media="all" type="text/css">
+			* {	
+				color : white;
+				background-color : black;
+			}
+		</style>
+	</head>
+	<body>
+<p>Bonjour,<br>
+<br>
+...CORPS DU MESSAGE DE LA LETTRE D'INFORMATION DU 02/10/2024...
+<br>
+Lien de desinscription : <a href="https://r2i-grout.fr/lettre-information.php">Cliquez-ici</a>.<br>
+<br>
+Cordialement,<br>
+Raphaël GROUT</p>
+</body>

@@ -1,0 +1,29 @@
+From: R2i-Grout <[SENDER]>
+To: [DESTINATAIRE]
+Subject: =?utf-8?B?[SUBJECT_B64]?=
+MIME-Version: 1.0
+Content-Type: text/html; charset="utf-8"
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   			<style media="all" type="text/css">
+			* {	
+				color : white;
+				background-color : black;
+			}
+		</style>
+	</head>
+	<body>
+<p>Bonjour,<br>
+<br>
+Votre lien de connexion : <a href="https://r2i-grout.fr/prise-de-rendez-vous.php?loginAdm=[HASH_LOGIN]">Cliquez-ici</a>.<br>
+rendez-vous<br>
+Celui-ci à la date d'expiration suivante : [EXPIRE_DATE]<br>
+<br>
+Cordialement,<br>
+Raphaël GROUT</p>
+	</body>
+</html>

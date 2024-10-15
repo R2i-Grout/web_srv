@@ -1,0 +1,12 @@
+From: R2i-Grout <[SENDER]>
+To: [DESTINATAIRE]
+Subject: =?utf-8?B?[SUBJECT_B64]?=
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="[BOUNDARY_MIXED]"
+
+--[BOUNDARY_MIXED]
+Content-Type: [FILE_TYPE]
+Content-Disposition: attachment;filename=[FILE_NAME]
+Content-Transfer-Encoding: base64
+
+

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <title>Devis</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html,
+        body {
+            width: 270mm;
+            height: 382mm;
+            margin: 0;
+            padding: 0;
+            display: inline-block;
+        }
+        .content {
+            width: 100%;
+            height: 100%;
+            padding: 20px;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+            background-color: white;
+            display: flex;
+            flex-direction:column;
+        }
+        .header {
+          height : 30mm;
+          /*background : red;*/
+        }
+        .body {
+          flex-grow : 1;
+          /*background : blue;*/
+        }
+        .footer {
+          height : 30mm;
+          /*background : yellow;*/
+          display: flex;
+          align-items: flex-end;
+          justify-content: center;
+        }
+        .entete {
+          width : 100%;
+        }
+        .entete2 {
+          width : 100%;
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+        .gauche {
+          text-align:left;
+        }
+        .droite {
+          text-align:right;
+        }
+        .entete2 td,th {
+          text-align:center;
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+        .entete3 {
+          width : 35%;
+          margin-right: 0px;
+          margin-left: auto;
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+         .entete3 td,th {
+          text-align:center;
+          border: 1px solid black;
+          border-collapse: collapse;
+        }
+        
+        .signature {
+          text-align : right;
+        }
+        .footer {
+          text-align : center;
+        }
+
+	.separateur {
+	  text-align : center;
+	}
+    </style>
+</head>
+<body>
+  <div class="content">
+    <div class="header">
+      <table class="entete">
+        <tr><td class="gauche">Raphaël GROUT</td><td class="droite">[NOM] [PRENOM]</td></tr>
+        <tr><td class="gauche">24 rue Lamartine</td><td class="droite">[ADRESSE]</td></tr>
+        <tr><td class="gauche">37000 Tours</td><td class="droite">[CODE_POSTAL] [VILLE]</td></tr>
+        <tr><td class="gauche">r2i-grout@mailo.fr</td><td class="droite">[EMAIL]</td></tr>
+        <tr><td class="gauche">06.10.56.91.97</td></tr>
+	<tr><td class="gauche"><a href="https://www.r2i-grout.fr">www.r2i-grout.fr</a></td></tr>
+      </table>
+    </div>
+    <div class="separateur">
+    	<p>
+        </br>
+	_______________________________________________________________</br>
+        </br>
+    </p>
+    </div>
+    <div class="body">
+      <table class="entete2">
+        <tr><th>Description</th><th>Date début</th><th>Qté</th><th>Unité</th><th>Prix catalogue</th></tr>
+[DEVIS]
+        </tr><td>Moyen de paiement</td><td>Par lien Internet</td></tr>
+      </table>
+      </br>
+      <p class="signature">
+        Date et signature du client</br>
+        (Précédé de la mention ‘Bon pour accord’)</br>
+      </p>
+    </div>
+    <div class="footer">
+      <p>
+        _______________________________________________________________</br>
+        </br>
+        R2I Grout – Réparation Recyclage Informatique Grout – Micro-Entreprise (E.I)</br>
+        24 rue Lamartine – 37000 Tours</br>
+        SIRET n° 929 798 510 00012</br>
+        RCP Pro MATMUT, Matmut Assurances, 15 rue des Déportés, 37000 Tours</br>
+        TVA non applicable - article 293 B du CGI</br>
+      </p>
+    </div>
+  </div>
+</body>
+</html>

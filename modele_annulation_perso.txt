@@ -1,0 +1,29 @@
+From: R2i-Grout <[SENDER]>
+To: [DESTINATAIRE]
+Subject: =?utf-8?B?[SUBJECT_B64]?=
+MIME-Version: 1.0
+Content-Type: text/html; charset="utf-8"
+
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+   			<style media="all" type="text/css">
+			* {	
+				color : white;
+				background-color : black;
+			}
+		</style>
+	</head>
+	<body>
+<p>Bonjour [CIVILITE]. [PRENOM] [NOM],<br>
+<br>
+Pour des raisons d'ordre personnel, j’ai du annulé votre rendez-vous programmé le [DATE_CRENEAU] de [HEURE_CRENEAU_DEBUT] à [HEURE_CRENEAU_FIN].<br>
+Je vous demande de bien vouloir m'excuser pour la gêne occasionnée.<br>
+<br>
+A bientôt,<br>
+Cordialement,<br>
+Raphaël GROUT</p>
+	</body>
+</html>
