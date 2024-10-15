@@ -1,7 +1,7 @@
 #/!\ Don't forget to run :
 #	chmod +x perio_run.sh
 
-# setterm -linewrap off	
+#    setterm -linewrap off	
 
 path_script="/home/cred.txt";
 dbname=$(sed -n 's/^dbname=\(.*\)/\1/p' < "${path_script}");
