@@ -24,8 +24,6 @@ Votre rendez-vous du [DATE_CRENEAU] de [HEURE_CRENEAU_DEBUT] à [HEURE_CRENEAU_F
 Si vous avez un empêchement, veuillez l’annuler en cliquant sur le lien ci-dessous.<br>
 <br>
 Lien d'annulation : <a href="https://r2i-grout.fr/[PAGE_RDV]?token=[HASH_ANNULATION_CLIENT]">Cliquez-ici</a>.<br>
-A noté que vous pouvez annuler jusqu'à 3h avant l'heure du rendez-vous.<br>
-En cas d'annulation, seul les frais de déplacement vous seront facturés.<br>
 <br>
 A bientôt,<br>
 Cordialement,<br>

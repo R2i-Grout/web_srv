@@ -592,6 +592,22 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 					}
 				});
 				
+				/*
+				
+				Entrée par défaut sélectionné "-----", il faut cliquer dessus pour que s'actualise la liste
+				Ajout liste déroulante
+				Entrée que par clique
+	
+				Récupérer depuis adresse, coordonnées GPS via Nominatim
+				https://operations.osmfoundation.org/policies/nominatim/
+				
+				puis fonction "est-ce que le point est à l'intérieur d'un polygone ?"
+				https://github.com/mikolalysenko/robust-point-in-polygon?tab=readme-ov-file
+				*/
+				
+				//https://operations.osmfoundation.org/policies/nominatim/
+				//https://fr.javascript.info/xmlhttprequest
+				//https://developer.mozilla.org/fr/docs/Web/API/XMLHttpRequest/setRequestHeader
 				/*document.getElementById("adresse").addEventListener('focusout', function(e) {
 					var xhr = new XMLHttpRequest();
 					xhr.open('GET', 'https://nominatim.openstreetmap.org/search?countrycodes=FR&street=24%20rue%20lamartine&postalcode=37000&country=FR&format=json&limit=40', true);
@@ -814,13 +830,11 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 					echo 'ADMINISTRATION<br/>
 ';
 					echo "<table>";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneePREV."&mois=".$moisPREV."&req=1\" target=\"_self\" rel=\"noopener noreferrer\">Requête au quotidien</a></td></tr>
+					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=1\" target=\"_self\" rel=\"noopener noreferrer\">Requête au quotidien</a></td></tr>
 ";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneePREV."&mois=".$moisPREV."&req=2\" target=\"_self\" rel=\"noopener noreferrer\">Requête historique par client</a></td></tr>
+					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=2\" target=\"_self\" rel=\"noopener noreferrer\">Requête historique par client</a></td></tr>
 ";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneePREV."&mois=".$moisPREV."&req=3\" target=\"_self\" rel=\"noopener noreferrer\">Requête tous les créneaux => Changer pour créneau non-réservable</a></td></tr>
-";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneePREV."&mois=".$moisPREV."&req=5\" target=\"_self\" rel=\"noopener noreferrer\">Création de nouveau créneau pour le mois et l'année demandés</a></td></tr>
+					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=3\" target=\"_self\" rel=\"noopener noreferrer\">Requête tous les créneaux du mois => Changer pour créneau non-réservable</a></td></tr>
 ";
 					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneePREV."&mois=".$moisPREV."&req=".$_GET['req']."\" target=\"_self\" rel=\"noopener noreferrer\">PREV</a></td></tr>
 ";
@@ -828,15 +842,21 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 ";
 					echo "</table>";
 					if ($_GET['req'] == "1") {
-						$sql6='SELECT * FROM '.$nomtablecreneau.' WHERE LENGTH(nom) IS NOT NULL ORDER BY DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN';
+						$sql6='SELECT * FROM '.$nomtablecreneau.' WHERE LENGTH(nom) AND MONTH(date_creneau)='.$mois.' AND YEAR(date_creneau)='.$annee.' IS NOT NULL ORDER BY DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN';
 					}
 					if ($_GET['req'] == "2") {
 						$sql6='SELECT * FROM '.$nomtablecreneau.' WHERE CONCAT(nom,prenom,numero_telephone) REGEXP "'.$_GET['search'].'" ORDER BY numero_telephone,date_creneau,heure_creneau_debut';
 					}
+					if ($_GET['req'] == "3") {
+						$sql6='SELECT DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN,CRENEAU_RESERVABLE FROM '.$nomtablecreneau.' WHERE MONTH(date_creneau)='.$mois.' AND YEAR(date_creneau)=20'.$annee.' ORDER BY date_creneau,heure_creneau_debut';
+					}
 					if ($_GET['req'] == "4") {
 						$sql6='UPDATE '.$nomtablecreneau.' SET EVT_ANNULATION_PERSO=1 WHERE EVT_ANNULATION_PERSO=0 AND HASH_ANNULATION_PERSO="'.$_GET['token_bis'].'"';
 					}
-					if (($_GET['req'] == "1") or ($_GET['req'] == "2") or ($_GET['req'] == "4")) {	
+					#if ($_GET['req'] == "5") {
+					#	$sql6='UPDATE '.$nomtablecreneau.' SET CRENEAU_RESERVABLE=(oppose valeur actuelle) WHERE HASH_RESERVABLE="'.$_GET['token_tis'].'"';
+					#}
+					if (($_GET['req'] == "1") or ($_GET['req'] == "2") or ($_GET['req'] == "3") or ($_GET['req'] == "4")) {	
 						try {
 							$statement6 = $link->prepare($sql6);
 							$statement6->execute();
@@ -845,20 +865,23 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 							exit('Something bad happened'); 
 						}
 					}
-					if (($_GET['req'] == "1") or ($_GET['req'] == "2")) {
+					if (($_GET['req'] == "1") or ($_GET['req'] == "2") or ($_GET['req'] == "3")) {
 						echo "			<table style=\"border-style: solid;\">";
 					}
 					if ($_GET['req'] == "1") {
 						while (($row2 = $statement6->fetch(PDO::FETCH_ASSOC)) !== false) {
 							SQL_to_HTML(array(
-								$row2['DATE_CRENEAU'],$row2['HEURE_CRENEAU_DEBUT'],$row2['HEURE_CRENEAU_FIN'],
-								$row2['CRENEAU_RESERVABLE'],$row2['DATE_CRENEAU_RESERVE'],
-								$row2['CIVILITE'],$row2['NOM'],$row2['PRENOM'],$row2['NUMERO_TELEPHONE'],$row2['EMAIL'],
+								$row2['DATE_CRENEAU']." ".$row2['HEURE_CRENEAU_DEBUT']."-".$row2['HEURE_CRENEAU_FIN'],
+								$row2['CRENEAU_RESERVABLE'],
+								$row2['DATE_CRENEAU_RESERVE'],
+								$row2['CIVILITE'],$row2['NOM'],$row2['PRENOM'],
+								"<a href=\"tel:".$row2['NUMERO_TELEPHONE']."\">TEL</a>",
+								"<a href=\"mailto:".$row2['EMAIL']."\">MAIL</a>",
 								$row2['EVT_ANNULATION_PERSO'],
-								"<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&req=4&token_bis=".$row2['HASH_ANNULATION_PERSO']."\" target=\"_blank\" rel=\"noopener noreferrer\">ANNUL PERSO</a>",
+								"<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&req=4&token_bis=".$row2['HASH_ANNULATION_PERSO']."\" target=\"_blank\" rel=\"noopener noreferrer\">AN PERSO</a>",
 								$row2['EVT_ANNULATION_CLIENT'],
-								"<a href=\"https://".$domainname."/".$rdv_filename."?token=".$row2['HASH_ANNULATION_CLIENT']."\" target=\"_blank\" rel=\"noopener noreferrer\">ANNUL CLIENT</a>",
-								"<a href=\"https://www.openstreetmap.org/search?query=".str_replace(" ","%20",($row2['ADRESSE'].' '.$row2['VILLE'].' '.$row2['CODE_POSTAL']))."\" target=\"_blank\" rel=\"noopener noreferrer\">OSM</a>"
+								"<a href=\"https://".$domainname."/".$rdv_filename."?token=".$row2['HASH_ANNULATION_CLIENT']."\" target=\"_blank\" rel=\"noopener noreferrer\">AN CLIENT</a>",
+								"<a href=\"https://www.openstreetmap.org/search?query=".str_replace(" ","%20",($row2['ADRESSE'].' '.$row2['VILLE'].' '.$row2['CODE_POSTAL']))."\" target=\"_blank\" rel=\"noopener noreferrer\">LOC</a>"
 							));
 						}
 					}
@@ -867,12 +890,23 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 							SQL_to_HTML(array(
 								$row2['DATE_CRENEAU'],$row2['HEURE_CRENEAU_DEBUT'],$row2['HEURE_CRENEAU_FIN'],
 								$row2['CRENEAU_RESERVABLE'],$row2['DATE_CRENEAU_RESERVE'],
-								$row2['CIVILITE'],$row2['NOM'],$row2['PRENOM'],$row2['NUMERO_TELEPHONE'],$row2['EMAIL'],
-								"<a href=\"https://www.openstreetmap.org/search?query=".str_replace(" ","%20",($row2['ADRESSE'].' '.$row2['VILLE'].' '.$row2['CODE_POSTAL']))."\" target=\"_blank\" rel=\"noopener noreferrer\">OSM</a>"
+								$row2['CIVILITE'],$row2['NOM'],$row2['PRENOM'],
+								"<a href=\"tel:".$row2['NUMERO_TELEPHONE']."\">TEL</a>",
+								"<a href=\"mailto:".$row2['EMAIL']."\">MAIL</a>",
+								"<a href=\"https://www.openstreetmap.org/search?query=".str_replace(" ","%20",($row2['ADRESSE'].' '.$row2['VILLE'].' '.$row2['CODE_POSTAL']))."\" target=\"_blank\" rel=\"noopener noreferrer\">LOC</a>"
 							));
 						}
 					}
-					if (($_GET['req'] == "1") or ($_GET['req'] == "2")) {
+					if ($_GET['req'] == "3") {
+						while (($row2 = $statement6->fetch(PDO::FETCH_ASSOC)) !== false) {
+							SQL_to_HTML(array(
+								$row2['DATE_CRENEAU'],$row2['HEURE_CRENEAU_DEBUT'],$row2['HEURE_CRENEAU_FIN'],$row2['CRENEAU_RESERVABLE'],
+								"<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&reserva=1\">",
+								"<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&reserva=1\">"
+							));
+						}
+					}
+					if (($_GET['req'] == "1") or ($_GET['req'] == "2") or ($_GET['req'] == "3")) {
 						echo '			</table>';
 					}
 					$link=null;

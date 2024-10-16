@@ -4,11 +4,11 @@
 
 function evtToMutt(evtType,DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN,DATE_CRENEAU_RESERVE,HASH_ANNULATION_CLIENT,CIVILITE,NOM,PRENOM,NUMERO_TELEPHONE,EMAIL,ADRESSE,CODE_POSTAL,VILLE,SERVICE,LIEUX_SERVICE,COMMENTAIRE,timestamp2,subject_b64)
 {
-	output=sprintf("gawk -f /home/%s/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v DATE_CRENEAU=\"%s\" -v HEURE_CRENEAU_DEBUT=\"%s\" -v HEURE_CRENEAU_FIN=\"%s\" -v DATE_CRENEAU_RESERVE=\"%s\" -v HASH_ANNULATION_CLIENT=\"%s\" -v CIVILITE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v NUMERO_TELEPHONE=\"%s\" -v EMAIL=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v SERVICE=\"%s\" -v LIEUX_SERVICE=\"%s\" /home/%s/modele_%s.txt > /home/%s/body_%s_%s.txt",usr_srv,smtp_sender,EMAIL,subject_b64, DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN,DATE_CRENEAU_RESERVE,HASH_ANNULATION_CLIENT,CIVILITE,NOM,PRENOM,NUMERO_TELEPHONE,EMAIL,ADRESSE,CODE_POSTAL,VILLE,SERVICE,LIEUX_SERVICE,usr_srv,evtType,usr_srv,evtType,timestamp2);
+	output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v DATE_CRENEAU=\"%s\" -v HEURE_CRENEAU_DEBUT=\"%s\" -v HEURE_CRENEAU_FIN=\"%s\" -v DATE_CRENEAU_RESERVE=\"%s\" -v HASH_ANNULATION_CLIENT=\"%s\" -v CIVILITE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v NUMERO_TELEPHONE=\"%s\" -v EMAIL=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v SERVICE=\"%s\" -v LIEUX_SERVICE=\"%s\" /home/modele_%s.eml > /home/body_%s_%s.eml",smtp_sender,EMAIL,subject_b64, DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN,DATE_CRENEAU_RESERVE,HASH_ANNULATION_CLIENT,CIVILITE,NOM,PRENOM,NUMERO_TELEPHONE,EMAIL,ADRESSE,CODE_POSTAL,VILLE,SERVICE,LIEUX_SERVICE,evtType,evtType,timestamp2);
 	printf("\t[%s][%s][%s]\n",timestamp2,evtType,output);
 	system(output);
 	#> instead of >> (append)
-	output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/%s/body_%s_%s.txt",smtp_url,smtp_sender,EMAIL,smtp_sender,smtp_pwd,usr_srv,evtType,timestamp2);
+	output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,EMAIL,smtp_sender,smtp_pwd,evtType,timestamp2);
 	printf("\t[%s][%s][%s]\n",timestamp2,evtType,output);
 	system(output);
 }
@@ -27,7 +27,6 @@ function toB64(plain_subject)
 BEGIN  {	
 	#printf("=============================================================================================================================\n");
 	
-	usr_srv="";
 	smtp_url="";
 	smtp_sender="";
 	smtp_pwd="";
@@ -38,14 +37,12 @@ BEGIN  {
 	while ((cmd |getline output) > 0)
 	{
 		#printf(">{%s}\n",output);
-		match(output,/^usr_srv=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { usr_srv=sprintf("%s", b[1]); }
 		match(output,/^smtp_url=(.*)$/,b); if (RLENGTH = -1 && RSTART != 0) { smtp_url=sprintf("%s", b[1]); }
 		match(output,/^smtp_sender=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { smtp_sender=sprintf("%s", b[1]); }
 		match(output,/^smtp_pwd=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { smtp_pwd=sprintf("%s", b[1]); }
 		match(output,/^rdv_filename=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { rdv_filename=sprintf("%s", b[1]); }
 	}
 	
-	#printf("usr_srv=[%s]\n",usr_srv);
 	#printf("smtp_url=[%s]\n",smtp_url);
 	#printf("smtp_sender=[%s]\n",smtp_sender);
 	#printf("smtp_pwd=[%s]\n",smtp_pwd);
@@ -73,31 +70,31 @@ BEGIN  {
 			FILE_NAME=sprintf("D-%s.pdf",timestamp2);
 						
 			#PDF - Replace .html PUIS génération .pdf PUIS insertion base 64 PUIS fermeture boundary_mixed
-			output=sprintf("gawk -f /home/%s/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" /home/%s/modele_devis.html > /home/%s/D-%s.html", usr_srv,a[4],a[5],a[6],a[7],a[8],a[9],a[1],usr_srv,usr_srv,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" /home/modele_devis.html > /home/D-%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],timestamp2);
 			#D pour Devis, F pour Facture
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
-			output=sprintf("wkhtmltopdf /home/%s/D-%s.html /home/%s/D-%s.pdf",usr_srv, timestamp2, usr_srv,timestamp2);
+			output=sprintf("wkhtmltopdf /home/D-%s.html /home/D-%s.pdf", timestamp2,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			cmd=sprintf("file --mime-type /home/%s/D-%s.pdf | sed 's/.*: //'",usr_srv,timestamp2);
+			cmd=sprintf("file --mime-type /home/D-%s.pdf | sed 's/.*: //'",timestamp2);
 			cmd | getline FILE_TYPE
 			close(cmd);
 			
-			output=sprintf("gawk -f /home/%s/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v FILE_TYPE=\"%s\" -v FILE_NAME=\"%s\" -v BOUNDARY_MIXED=\"%s\" /home/%s/modele_%s_1.txt > /home/%s/body_%s_%s.txt", usr_srv, smtp_sender, a[1], toB64("[R2i-Grout][À confirmer] Lien de votre prise de rendez-vous"),FILE_TYPE,FILE_NAME,BOUNDARY_MIXED,usr_srv, traitement, usr_srv,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v FILE_TYPE=\"%s\" -v FILE_NAME=\"%s\" -v BOUNDARY_MIXED=\"%s\" /home/modele_%s_1.eml > /home/body_%s_%s.eml", smtp_sender, a[1], toB64("[R2i-Grout][À confirmer] Lien de votre prise de rendez-vous"),FILE_TYPE,FILE_NAME,BOUNDARY_MIXED, traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			output=sprintf("base64 \"/home/%s/D-%s.pdf\" >> \"/home/%s/body_%s_%s.txt\"",usr_srv, timestamp2, usr_srv,traitement,timestamp2);
+			output=sprintf("base64 \"/home/D-%s.pdf\" >> \"/home/body_%s_%s.eml\"", timestamp2,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			output=sprintf("gawk -f /home/%s/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v HASH_CONFIRMATION=\"%s\" -v EXPIRE_HASH=\"%s\" -v BOUNDARY_MIXED=\"%s\" -v CIVILITE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v DATE_CRENEAU=\"%s\" -v HEURE_CRENEAU_DEBUT=\"%s\" -v HEURE_CRENEAU_FIN=\"%s\" -v DATE_CRENEAU_RESERVE=\"%s\" /home/%s/modele_%s_2.txt >> /home/%s/body_%s_%s.txt", usr_srv, a[2], a[3], BOUNDARY_MIXED, a[10], a[5], a[6], a[11], a[12], a[13], a[14], usr_srv, traitement, usr_srv,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v HASH_CONFIRMATION=\"%s\" -v EXPIRE_HASH=\"%s\" -v BOUNDARY_MIXED=\"%s\" -v CIVILITE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v DATE_CRENEAU=\"%s\" -v HEURE_CRENEAU_DEBUT=\"%s\" -v HEURE_CRENEAU_FIN=\"%s\" -v DATE_CRENEAU_RESERVE=\"%s\" /home/modele_%s_2.eml >> /home/body_%s_%s.eml", a[2], a[3], BOUNDARY_MIXED, a[10], a[5], a[6], a[11], a[12], a[13], a[14], traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/%s/body_%s_%s.txt",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,usr_srv,traitement,timestamp2);
+			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 		}
@@ -107,10 +104,10 @@ BEGIN  {
 		match($0,/"([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
-			output=sprintf("gawk -f /home/%s/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_CONF=\"%s\" -v EXPIRE_HASH=\"%s\" -v SUBJECT_B64=\"%s\" /home/%s/modele_%s.txt > /home/%s/body_%s_%s.txt", usr_srv, smtp_sender, a[1], a[2], a[3], toB64("[R2i-Grout][À confirmer] Lien relatif à la lettre d'information"),usr_srv, traitement, usr_srv,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_CONF=\"%s\" -v EXPIRE_HASH=\"%s\" -v SUBJECT_B64=\"%s\" /home/modele_%s.eml > /home/body_%s_%s.eml", smtp_sender, a[1], a[2], a[3], toB64("[R2i-Grout][À confirmer] Lien relatif à la lettre d'information"), traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
-			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/%s/body_%s_%s.txt",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,usr_srv,traitement,timestamp2);
+			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 		}
@@ -120,10 +117,10 @@ BEGIN  {
 		match($0,/"([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
-			output=sprintf("gawk -f /home/%s/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_LOGIN=\"%s\" -v EXPIRE_DATE=\"%s\" -v SUBJECT_B64=\"%s\" /home/%s/modele_%s.txt > /home/%s/body_%s_%s.txt", usr_srv, smtp_sender, a[1], a[2], a[3], toB64("[R2i-Grout] Lien de connexion à l'interface de prise de rendez-vous"),usr_srv, traitement, usr_srv,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_LOGIN=\"%s\" -v EXPIRE_DATE=\"%s\" -v SUBJECT_B64=\"%s\" /home/modele_%s.eml > /home/body_%s_%s.eml", smtp_sender, a[1], a[2], a[3], toB64("[R2i-Grout] Lien de connexion à l'interface de prise de rendez-vous"), traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
-			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/%s/body_%s_%s.txt",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,usr_srv,traitement,timestamp2);
+			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 		}
@@ -145,17 +142,20 @@ BEGIN  {
 		match($0,/"([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
-			output=sprintf("gawk -f /home/%s/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v EMAIL=\"%s\" /home/%s/%s > /home/%s/body_%s_%s.txt", usr_srv,a[1],usr_srv,modele,usr_srv,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v EMAIL=\"%s\" /home/%s > /home/body_%s_%s.eml",a[1],modele,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/%s/body_%s_%s.txt",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,usr_srv,traitement,timestamp2);
+			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 		}
 	}
 	if (traitement=="field_replace_csvToBody")
 	{
+		if (SERVICE==1) { $0=gensub(/\[DEVIS\]/,"        <tr><td>Installation OS</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>45.00€</td></tr>\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>45.00€<td></tr>\n",1,$0); }
+		if (SERVICE==2) { $0=gensub(/\[DEVIS\]/,"        <tr><td>Récupération de données</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>40.00€</td></tr>\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>40.00€</td></tr>\n",1,$0); }
+		
 		if (length(DATE_CRENEAU) > 0) { $0=gensub(/\[DATE_CRENEAU\]/,DATE_CRENEAU,1,$0); }
 		if (length(HEURE_CRENEAU_DEBUT) > 0) { $0=gensub(/\[HEURE_CRENEAU_DEBUT\]/,HEURE_CRENEAU_DEBUT,1,$0); }
 		if (length(HEURE_CRENEAU_FIN) > 0) { $0=gensub(/\[HEURE_CRENEAU_FIN\]/,HEURE_CRENEAU_FIN,1,$0); }
@@ -173,9 +173,6 @@ BEGIN  {
 		if (length(LIEUX_SERVICE) > 0) { $0=gensub(/\[LIEUX_SERVICE\]/,LIEUX_SERVICE,1,$0); }
 		
 		if (length(rdv_filename) > 0) { $0=gensub(/\[PAGE_RDV\]/,rdv_filename,1,$0); }
-		
-		if (SERVICE==1) { $0=gensub(/\[DEVIS\]/,"        <tr><td>Installation OS</td><td>30/09</td><td>1</td><td>heure</td><td>45.00€</td></tr>\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>45.00€<td></tr>\n",1,$0); }
-		if (SERVICE==2) { $0=gensub(/\[DEVIS\]/,"        <tr><td>Récupération de données</td><td>30/09</td><td>1</td><td>heure</td><td>40.00€</td></tr>\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>40.00€</td></tr>\n",1,$0); }
 		
 		if (length(FILE_TYPE) > 0) { $0=gensub(/\[FILE_TYPE\]/,FILE_TYPE,1,$0); }
 		if (length(FILE_NAME) > 0) { $0=gensub(/\[FILE_NAME\]/,FILE_NAME,1,$0); }
@@ -195,10 +192,15 @@ BEGIN  {
 	}
 	if (traitement=="reminder_17h")
 	{
-		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
+		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
-			evtToMutt("reminder",a[1],a[2],a[3],a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16]);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_ANNULATION_CLIENT=\"%s\" -v SUBJECT_B64=\"%s\" -v DATE_CRENEAU=\"%s\" -v HEURE_CRENEAU_DEBUT=\"%s\" -v HEURE_CRENEAU_FIN=\"%s\" -v DATE_CRENEAU_RESERVE=\"%s\" -v CIVILITE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v SERVICE=\"%s\" -v LIEUX_SERVICE=\"%s\" /home/modele_%s.eml > /home/body_%s_%s.eml", smtp_sender, a[9], a[5], toB64("[R2i-Grout][Rappel] Vous avez un rendez-vous demain"),a[1],a[2],a[3],a[4],a[6],a[7],a[8],a[10],a[11],a[12],a[13],a[14], traitement,traitement,timestamp2);
+			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
+			system(output);
+			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
+			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
+			system(output);
 		}
 	}
 }

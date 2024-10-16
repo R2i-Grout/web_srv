@@ -5,7 +5,6 @@
 
 path_script="/home/cred.txt";
 dbname=$(sed -n 's/^dbname=\(.*\)/\1/p' < "${path_script}");
-usr_srv=$(sed -n 's/^usr_srv=\(.*\)/\1/p' < "${path_script}");
 
 if [ "$1" = "backup_3h" ]; then
 	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
@@ -23,18 +22,17 @@ if [ "$1" = "backup_3h" ]; then
 	#https://mariadb.com/kb/en/making-backups-with-mariadb-dump/
 	#https://mariadb.com/kb/en/mariadb-dump/
 	##https://mariadb.com/kb/en/restoring-data-from-dump-files/
-		sudo mariadb-dump --lock-tables --databases ${dbname} wp_db > /home/${usr_srv}/${dbname}_and_wordpress_backup.sql
+		sudo mariadb-dump --lock-tables --databases ${dbname} wp_db > /home/${dbname}_and_wordpress_backup.sql
 		#wp db export yourwpdatabase.sql
 		#mariadb --user admin_restore --password < /home/<...>/test.sql
 fi
 if [ "$1" = "reminder_17h" ]; then
 	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
 	sudo rm -f /var/lib/mysql/${dbname}/$1.csv;
-	sudo rm -f /home/${usr_srv}/body_reminder.txt;
 	sudo mysql -D ${dbname} -e "\
 		SELECT \
-			DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN,DATE_CRENEAU_RESERVE,HEURE_CRENEAU_RESERVE,HASH_ANNULATION_CLIENT, \
-			CIVILITE,NOM,PRENOM,NUMERO_TELEPHONE,EMAIL,ADRESSE,CODE_POSTAL,VILLE,SERVICE,LIEUX_SERVICE \
+			DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN,DATE_CRENEAU_RESERVE,HASH_ANNULATION_CLIENT, \
+			CIVILITE,NOM,PRENOM,EMAIL,ADRESSE,CODE_POSTAL,VILLE,SERVICE,LIEUX_SERVICE \
 			INTO OUTFILE \"$1.csv\" FIELDS TERMINATED BY \",\" ENCLOSED BY \"\\\"\" LINES TERMINATED BY \"\\n\" \
 			FROM rendez_vous \
 			WHERE \
@@ -44,7 +42,7 @@ if [ "$1" = "reminder_17h" ]; then
 	if [ -f /var/lib/mysql/${dbname}/$1.csv ]; then
 		sudo cat /var/lib/mysql/${dbname}/$1.csv;
 	fi
-	sudo gawk -f /home/${usr_srv}/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
+	sudo gawk -f /home/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
 fi
 if [ "$1" = "2fa_5m" ]; then
 	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
@@ -62,7 +60,7 @@ if [ "$1" = "2fa_5m" ]; then
 	if [ -f /var/lib/mysql/${dbname}/$1.csv ]; then
 		sudo cat /var/lib/mysql/${dbname}/$1.csv;
 	fi
-	sudo gawk -f /home/${usr_srv}/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
+	sudo gawk -f /home/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		UPDATE 2fa \
 			SET TO_SENT = 0 \
@@ -91,7 +89,7 @@ if [ "$1" = "lettre_info_5m" ]; then
 	if [ -f /var/lib/mysql/${dbname}/$1.csv ]; then
 		sudo cat /var/lib/mysql/${dbname}/$1.csv;
 	fi
-	sudo gawk -f /home/${usr_srv}/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
+	sudo gawk -f /home/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		UPDATE lettre_information \
 			SET TO_SENT = 0 \
@@ -120,7 +118,7 @@ if [ "$1" = "demande_confirmation_5m" ]; then
 	if [ -f /var/lib/mysql/${dbname}/$1.csv ]; then
 		sudo cat /var/lib/mysql/${dbname}/$1.csv;
 	fi
-	sudo gawk -f /home/${usr_srv}/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
+	sudo gawk -f /home/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		UPDATE rendez_vous \
 			SET EVT_DEMANDE_CONFIRMATION = 0 \
@@ -150,7 +148,7 @@ if [ "$1" = "evt_5m" ]; then
 	if [ -f /var/lib/mysql/${dbname}/$1.csv ]; then
 		sudo cat /var/lib/mysql/${dbname}/$1.csv;
 	fi
-	sudo gawk -f /home/${usr_srv}/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
+	sudo gawk -f /home/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		UPDATE rendez_vous \
 			SET EVT_CONFIRMATION=0 \
