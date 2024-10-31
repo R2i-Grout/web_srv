@@ -1,20 +1,32 @@
 <?php
 session_start();
 ?>
+<!DOCTYPE html>
 <html lang="fr">
 <head>
 	<meta charset="UTF-8">
 	<meta name="author" content="Raphaël GROUT">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Inscription à la lettre d'information de R2I-GROUT">
+	<meta name="description" content="Inscription à la lettre d'information de R2I-GROUT.">
 	<meta name="keywords" content="Lettre Information R2I-GROUT">
+	<link rel="canonical" href="https://r2i-grout.fr/lettre-information.php" />
+	<meta property="og:locale" content="fr_FR" >
+	<meta property="og:type" content="website" >
+	<meta property="og:title" content="Inscription à la lettre d&#039;information de R2i-Grout" >
+	<meta property="og:description" content="Inscription à la lettre d'information de R2I-GROUT." >
+	<meta property="og:url" content="https://r2i-grout.fr/lettre-information.php">
+	
+	<meta name="title" content="Inscription à la lettre d&#039;information de R2i-Grout">
+	<meta name="robots" content="index,follow">
+	
 	<title>Inscription à la lettre d'information</title>
 	<?php require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php'); wp_head(); get_header(); ?>
 	<style>
 		/* <921px -> body class="ast-header-break-point" <- "ast-desktop" */
 		@media (min-width : 922px) {
 			.site-content .ast-container {
-				display: flex;
+				/*display: flex;*/
+                                flex-direction: column;
 			}
 		}
 		@media (max-width : 921px) {
@@ -26,11 +38,11 @@ session_start();
 			display :grid;
 		}
 		div.ast-container {
-			display : grid;
+			display : flex; /* grid */
 			align-items:center;
 		}
 		#TE {
-			background-color: #000000;
+			/* background-color: #000000; */
 			color : #FFFFFF;
 		}
 		#A,#B,#C
@@ -73,7 +85,7 @@ session_start();
 	</style>
 </head>
 <body>
-<h1 style="color:red; text-align:center;">SYSTEME EN COURS DE TEST.<br> L'ENSEMBLE DES DONNEES RENTREES SERA SUPPRIME LE 31 OCTOBRE.<br>LE SYSTEME SERA EN PRODUCTION A PARTIR DU 1 NOVEMBRE</h1>
+<!-- <h1 style="color:red; text-align:center;">SYSTEME EN COURS DE TEST.<br> L'ENSEMBLE DES DONNEES RENTREES SERA SUPPRIME LE 31 OCTOBRE.<br>LE SYSTEME SERA EN PRODUCTION A PARTIR DU 1 NOVEMBRE</h1> -->
 <?php
 
 $domainname = '';
@@ -141,10 +153,6 @@ if (!empty($_SESSION['generated_captcha_expected'])) {
 	}
 } #else correspond à un cas normal
 
-#Latin Extended-A pour l'instant, puis ensuite si nécessaire ajout de : Letterlike_Symbols, Cyrillic, Greek_and_Coptic, Exposants_et_indices_Unicode + Latin étendu
-#	Mauvais affichage du Latin Etendue A, trop niche donc aller sur de l'exposant et du cyrillic
-#	/!\ Bien prendre sur la page wikipedia, la colonne la plus à gauche pour la valeur hexadécimal
-
 #$hideForm=1;
 
 $charset_displayed	= array('\u0400','\u0401','\u0405','\u0406','\u0407','\u0408','\u040C','\u0410','\u0412','\u0415','\u041A','\u041C','\u041D','\u041E','\u0420','\u0421','\u0422','\u0425');
@@ -197,9 +205,7 @@ echo	"<form id=\"TE\" method=\"post\"".(($hideForm)?" style=\"display: none\"":"
 				<div id="image" selectable="False"><?php echo $test;?></div>
 			</td></tr>
 			<tr><td>
-				<p>Saisissez la chaîne de caractères comprenant uniquement les caractères (A à Z,a à z,0 à 9) qui se rapproche le plus de la chaîne de caractères donnée.<br>
-				Ignorer les accents car aucun caractère avec accent n'est demandé pour faciliter la saisie par l'utilisateur.<br>
-				Exemple : Ќ -> K, Џ -> U</p>
+				<p>Exemple : ЌЏНЀМЁЇТ -> KUHEMEIT</p>
 				<input type="text" id="C" name="captcha" placeholder="Renseigner le captcha ci-dessus" />
                		</td></tr>
 			<tr>

@@ -9,21 +9,13 @@ Content-Type: text/html; charset="utf-8"
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-   			<style media="all" type="text/css">
-			* {	
-				color : white;
-				background-color : black;
-			}
-		</style>
 	</head>
 	<body>
 <p>Bonjour [CIVILITE]. [PRENOM] [NOM],<br>
 <br>
 Votre rendez-vous du [DATE_CRENEAU] de [HEURE_CRENEAU_DEBUT] à [HEURE_CRENEAU_FIN] a bien été enregistré le [DATE_CRENEAU_RESERVE].<br>
 <br>
-Si vous avez un empêchement, veuillez l’annuler en cliquant sur le lien ci-dessous.<br>
-<br>
-Lien d'annulation : <a href="https://r2i-grout.fr/[PAGE_RDV]?token=[HASH_ANNULATION_CLIENT]">Cliquez-ici</a>.<br>
+Si vous avez un empêchement, veuillez l’annuler en cliquant sur <a href="https://r2i-grout.fr/[PAGE_RDV]?token=[HASH_ANNULATION_CLIENT]">lien</a>.<br>
 <br>
 A bientôt,<br>
 Cordialement,<br>

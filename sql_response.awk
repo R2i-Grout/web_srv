@@ -55,7 +55,7 @@ BEGIN  {
 	timestamp2=substr(timestamp2,0,length(timestamp2)-6);
 	if (traitement=="demande_confirmation_5m")
 	{
-		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a); #
+		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
 			#$(cat /proc/sys/kernel/random/uuid)
@@ -70,7 +70,7 @@ BEGIN  {
 			FILE_NAME=sprintf("D-%s.pdf",timestamp2);
 						
 			#PDF - Replace .html PUIS génération .pdf PUIS insertion base 64 PUIS fermeture boundary_mixed
-			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" /home/modele_devis.html > /home/D-%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" -v LIEUX_SERVICE=\"%s\" -v STATUT=\"%s\" -v DENSEC=\"%s\" -v SIREN=\"%s\" /home/modele_devis.html > /home/D-%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],a[15],a[16],a[17],a[18],timestamp2);
 			#D pour Devis, F pour Facture
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
@@ -82,7 +82,7 @@ BEGIN  {
 			cmd | getline FILE_TYPE
 			close(cmd);
 			
-			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v FILE_TYPE=\"%s\" -v FILE_NAME=\"%s\" -v BOUNDARY_MIXED=\"%s\" /home/modele_%s_1.eml > /home/body_%s_%s.eml", smtp_sender, a[1], toB64("[R2i-Grout][À confirmer] Lien de votre prise de rendez-vous"),FILE_TYPE,FILE_NAME,BOUNDARY_MIXED, traitement,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v FILE_TYPE=\"%s\" -v FILE_NAME=\"%s\" -v BOUNDARY_MIXED=\"%s\" /home/modele_%s_1.eml > /home/body_%s_%s.eml", smtp_sender, a[1], toB64("[R2i-Grout][À confirmer] Votre rendez-vous"),FILE_TYPE,FILE_NAME,BOUNDARY_MIXED, traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
@@ -104,7 +104,7 @@ BEGIN  {
 		match($0,/"([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
-			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_CONF=\"%s\" -v EXPIRE_HASH=\"%s\" -v SUBJECT_B64=\"%s\" /home/modele_%s.eml > /home/body_%s_%s.eml", smtp_sender, a[1], a[2], a[3], toB64("[R2i-Grout][À confirmer] Lien relatif à la lettre d'information"), traitement,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_CONF=\"%s\" -v EXPIRE_HASH=\"%s\" -v SUBJECT_B64=\"%s\" /home/modele_%s.eml > /home/body_%s_%s.eml", smtp_sender, a[1], a[2], a[3], toB64("[R2i-Grout][À confirmer] Votre inscription à la lettre d'information"), traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
@@ -134,7 +134,7 @@ BEGIN  {
 			printf("[1-%s][19-%s]\n",a[1],a[19]);
 			if(a[1] == "1") { print "HERE"; evtToMutt("confirme",a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],timestamp2,toB64("[R2i-Grout] Confirmation de votre prise de rendez-vous")); }
 			if(a[2] == "1") { evtToMutt("annulation_perso",a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],timestamp2,toB64("[R2i-Grout] Annulation de votre rendez-vous")); }
-			if(a[3] == "1") { evtToMutt("annulation_client",a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],timestamp2,toB64("[R2i-Grout][À confirmer] Annulation de votre rendez-vous")); }
+			if(a[3] == "1") { evtToMutt("annulation_client",a[4],a[5],a[6],a[7],a[8],a[9],a[10],a[11],a[12],a[13],a[14],a[15],a[16],a[17],a[18],a[19],timestamp2,toB64("[R2i-Grout] Annulation de votre rendez-vous")); }
 		}
 	}
 	if (traitement=="envoi_lettre_information")
@@ -153,10 +153,62 @@ BEGIN  {
 	}
 	if (traitement=="field_replace_csvToBody")
 	{
-		if (SERVICE==1) { $0=gensub(/\[DEVIS\]/,"        <tr><td>Installation OS</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>45.00€</td></tr>\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>45.00€<td></tr>\n",1,$0); }
-		if (SERVICE==2) { $0=gensub(/\[DEVIS\]/,"        <tr><td>Récupération de données</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>40.00€</td></tr>\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>40.00€</td></tr>\n",1,$0); }
+		devis="";
+		if (SERVICE=="1") {
+			devis=sprintf("%s        <tr><td>Diagnostique de panne</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>0.00€</td></tr>",devis);
+			if (LIEUX_SERVICE=="1") {
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>15.00€<td></tr>\n",devis);
+			}
+			if (LIEUX_SERVICE=="2") {
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>0.00€<td></tr>\n",devis);
+			}
+		}
+		if (SERVICE=="2") {
+			devis=sprintf("%s        <tr><td>Réparation d'ordinateur</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>50.00€</td></tr>",devis);
+			if (LIEUX_SERVICE=="1") {
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
+			}
+			if (LIEUX_SERVICE=="2") {
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>50.00€<td></tr>\n",devis);
+			}
+		}
+		if (SERVICE=="3") {
+			devis=sprintf("%s        <tr><td>Installation OS</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>50.00€</td></tr>",devis);
+			if (LIEUX_SERVICE=="1") {
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
+			}
+			if (LIEUX_SERVICE=="2") {
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>50.00€<td></tr>\n",devis);
+			}
+		}
+		if (SERVICE=="4")
+		{
+			devis=sprintf("%s        <tr><td>Récupération de données</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>50.00€</td></tr>",devis);
+			if (LIEUX_SERVICE=="1") {
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
+			}
+			if (LIEUX_SERVICE=="2") {
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>50.00€<td></tr>\n",devis);
+			}
+		}
+		if (length(devis) > 0) { gsub(/\[DEVIS\]/,devis,$0); }
 		
-		if (length(DATE_CRENEAU) > 0) { $0=gensub(/\[DATE_CRENEAU\]/,DATE_CRENEAU,1,$0); }
+		client="";
+		if (STATUT == "2")
+		{
+			client=sprintf("%s[DENSEC] ([SIREN])",client);
+		}
+		if (STATUT == "1")
+		{
+			client=sprintf("%s[NOM] [PRENOM]",client);
+		}
+		if (length(client) > 0) { gsub(/\[CLIENT\]/,client,$0); }
+		
+		if (length(DATE_CRENEAU) > 0) { gsub(/\[DATE_CRENEAU\]/,DATE_CRENEAU,$0); }
 		if (length(HEURE_CRENEAU_DEBUT) > 0) { $0=gensub(/\[HEURE_CRENEAU_DEBUT\]/,HEURE_CRENEAU_DEBUT,1,$0); }
 		if (length(HEURE_CRENEAU_FIN) > 0) { $0=gensub(/\[HEURE_CRENEAU_FIN\]/,HEURE_CRENEAU_FIN,1,$0); }
 		if (length(DATE_CRENEAU_RESERVE) > 0) { $0=gensub(/\[DATE_CRENEAU_RESERVE\]/,DATE_CRENEAU_RESERVE,1,$0); }
@@ -171,6 +223,9 @@ BEGIN  {
 		if (length(VILLE) > 0) { $0=gensub(/\[VILLE\]/,VILLE,1,$0); }
 		if (length(SERVICE) > 0) { $0=gensub(/\[SERVICE\]/,SERVICE,1,$0); }
 		if (length(LIEUX_SERVICE) > 0) { $0=gensub(/\[LIEUX_SERVICE\]/,LIEUX_SERVICE,1,$0); }
+		
+		if (length(DENSEC) > 0) { $0=gensub(/\[DENSEC\]/,DENSEC,1,$0); }
+		if (length(SIREN) > 0) { $0=gensub(/\[SIREN\]/,SIREN,1,$0); }
 		
 		if (length(rdv_filename) > 0) { $0=gensub(/\[PAGE_RDV\]/,rdv_filename,1,$0); }
 		

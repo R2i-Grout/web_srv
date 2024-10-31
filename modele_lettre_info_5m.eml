@@ -9,18 +9,12 @@ Content-Type: text/html; charset="utf-8"
 	<head>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-   			<style media="all" type="text/css">
-			* {	
-				color : white;
-				background-color : black;
-			}
-		</style>
 	</head>
 	<body>
 <p>Bonjour,<br>
 <br>
-Votre lien de confirmation à propos de votre statut d'abonnement à la lettre d'information : <a href="https://r2i-grout.fr/lettre-information.php?token=[HASH_CONF]">Cliquez-ici</a>.<br>
-Possédant la date d'expiration suivante : [EXPIRE_HASH].<br>
+Vous devez confirmer la modification de votre statut d'abonnement à la lettre d'information en cliquant sur ce lien : <a href="https://r2i-grout.fr/lettre-information.php?token=[HASH_CONF]">Cliquez-ici</a>.<br>
+Ce lien expirera le [EXPIRE_HASH].<br>
 <br>
 Cordialement,<br>
 Raphaël GROUT</p>
