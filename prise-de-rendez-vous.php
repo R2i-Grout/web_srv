@@ -65,13 +65,21 @@ session_start();
                                 flex-direction: column;
                         }
                 }
-                div#content{
+                
+                /*div#content{
                         display :grid;
                 }
                 div.ast-container {
                         display : grid;
                         align-items:center;
-                }
+                }*/
+                
+                div#content {
+			display : flex;
+			align-items:center;
+		}
+                
+                
 		.wrapper2{
 			display : flex;
 			align-items :center;
@@ -392,8 +400,8 @@ $dateMAX = new DateTime("20".$annee."-".$mois."-".($dateMAX->format('t')));
 if ($dateMAX->format('N') < 7) {$dateMAX->modify('+'.(7-$dateMAX->format('N')).' day');}
 
 while ($dateMIN->format('N') < $dateMINM->format('N')) {
-	echo '							<li class="inactive">'.$dateMIN->format("d").'</li>
-';
+	echo '							<li class="inactive"></li>
+'; #'.$dateMIN->format("d").'
 	$dateMIN->modify('+1 day');
 }
 
@@ -465,8 +473,8 @@ for ($x = 1; $x <= (new DateTime("20".$annee."-".$mois."-01"))->format('t'); $x+
 
 while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 	$dateMAXM->modify('+1 day');
-	echo '							<li class="inactive">'.($dateMAXM->format("j")).'</li>
-';
+	echo '							<li class="inactive"></li>
+'; #'.($dateMAXM->format("j")).'
 }
 ?>
 

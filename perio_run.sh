@@ -26,8 +26,8 @@ if [ "$1" = "backup_3h" ]; then
 		#wp db export yourwpdatabase.sql
 		#mariadb --user admin_restore --password < /home/<...>/test.sql
 fi
-if [ "$1" = "reminder_17h" ]; then
-	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
+if [ "$1" = "reminder" ]; then
+	#echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
 	sudo rm -f /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		SELECT \
@@ -45,7 +45,6 @@ if [ "$1" = "reminder_17h" ]; then
 	sudo gawk -f /home/sql_response.awk -v traitement=$1 /var/lib/mysql/${dbname}/$1.csv;
 fi
 if [ "$1" = "2fa_5m" ]; then
-	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
 	sudo rm -f /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		SELECT \
@@ -74,7 +73,6 @@ if [ "$1" = "2fa_5m" ]; then
 	";
 fi
 if [ "$1" = "lettre_info_5m" ]; then
-	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
 	sudo rm -f /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		SELECT \
@@ -103,7 +101,6 @@ if [ "$1" = "lettre_info_5m" ]; then
 	";
 fi
 if [ "$1" = "demande_confirmation_5m" ]; then
-	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
 	sudo rm -f /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		SELECT \
@@ -133,7 +130,6 @@ if [ "$1" = "demande_confirmation_5m" ]; then
 	";
 fi
 if [ "$1" = "evt_5m" ]; then
-	echo $(date +%Y/%m/%d-%H:%M:%S) : $1;
 	sudo rm -f /var/lib/mysql/${dbname}/$1.csv;
 	sudo mysql -D ${dbname} -e "\
 		SELECT \
@@ -161,7 +157,7 @@ if [ "$1" = "evt_5m" ]; then
 				EVT_ANNULATION_PERSO=0, EVT_ANNULATION_CLIENT=0, \
 				DATE_CRENEAU_RESERVE=NULL,HASH_ANNULATION_CLIENT=NULL,HASH_ANNULATION_PERSO=NULL, \
 				CIVILITE=NULL,NOM=NULL,PRENOM=NULL,NUMERO_TELEPHONE=NULL,EMAIL=NULL,ADRESSE=NULL,CODE_POSTAL=NULL,VILLE=NULL,SERVICE=NULL,LIEUX_SERVICE=NULL, \
-				EVT_DEMANDE_CONFIRMATION=NULL,HASH_CONFIRMATION=NULL,EVT_CONFIRMATION=NULL,CONFIRMATION=NULL,COMMENTAIRE=NULL,CONNAISSANCE_ZA=NULL,ACCEPTATION_CGV=NULL,CONSENTEMENT_RGPD=NULL \
+				EVT_DEMANDE_CONFIRMATION=NULL,HASH_CONFIRMATION=NULL,EVT_CONFIRMATION=NULL,CONFIRMATION=NULL,COMMENTAIRE=NULL,ACCEPTATION_CGV=NULL,CONSENTEMENT_RGPD=NULL \
 			WHERE \
 				DATE(date_creneau_reserve) IS NOT NULL \
 				AND ((CONFIRMATION=1 AND (EVT_ANNULATION_PERSO=1 or EVT_ANNULATION_CLIENT=1)) \

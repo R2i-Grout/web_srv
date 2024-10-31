@@ -23,5 +23,5 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 * *	* * *	root	sudo /home/perio_run.sh lettre_info_5m >> /home/perio_run.sh.log 2>&1
 * *	* * *	root	sudo /home/perio_run.sh demande_confirmation_5m >> /home/perio_run.sh.log 2>&1
 * *	* * *	root	sudo /home/perio_run.sh evt_5m >> /home/perio_run.sh.log 2>&1
-* 12	* * *	root	sudo /home/perio_run.sh reminder_17h >> /home/perio_run.sh.log 2>&1
+0 21	* * *	root	sudo /home/perio_run.sh reminder >> /home/perio_run.sh.log 2>&1
 #

@@ -245,7 +245,7 @@ BEGIN  {
 
 		printf("%s\n",$0);
 	}
-	if (traitement=="reminder_17h")
+	if (traitement=="reminder")
 	{
 		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
@@ -253,7 +253,7 @@ BEGIN  {
 			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v HASH_ANNULATION_CLIENT=\"%s\" -v SUBJECT_B64=\"%s\" -v DATE_CRENEAU=\"%s\" -v HEURE_CRENEAU_DEBUT=\"%s\" -v HEURE_CRENEAU_FIN=\"%s\" -v DATE_CRENEAU_RESERVE=\"%s\" -v CIVILITE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v SERVICE=\"%s\" -v LIEUX_SERVICE=\"%s\" /home/modele_%s.eml > /home/body_%s_%s.eml", smtp_sender, a[9], a[5], toB64("[R2i-Grout][Rappel] Vous avez un rendez-vous demain"),a[1],a[2],a[3],a[4],a[6],a[7],a[8],a[10],a[11],a[12],a[13],a[14], traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
-			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
+			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[9],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 		}
