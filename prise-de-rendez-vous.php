@@ -516,11 +516,11 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						</tr>
 						<tr id="densoc_line">
 							<td class="cle">Dénomination sociale</td>
-							<?php echo "<td><input id=\"densoc\" class=\"valeur input\" type=\"text\" name=\"densoc\" value=\"".((!empty($_POST["densoc"]))?$_POST["densoc"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"densoc\" class=\"valeur input\" type=\"text\" name=\"densoc\" maxlength=\"50\" value=\"".((!empty($_POST["densoc"]))?$_POST["densoc"]:'')."\"/></td>";?>
 						</tr>
 						<tr id="siren_line">
 							<td class="cle">SIREN client</td>
-							<?php echo "<td><input id=\"siren\" class=\"valeur input\" type=\"text\" name=\"siren\" value=\"".((!empty($_POST["siren"]))?$_POST["siren"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"siren\" class=\"valeur input\" type=\"text\" name=\"siren\" maxlength=\"9\" value=\"".((!empty($_POST["siren"]))?$_POST["siren"]:'')."\"/></td>";?>
 						</tr>
 						<tr>
 							<td class="cle">Civilité</td>
@@ -577,31 +577,31 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						</tr>
 						<tr>
 							<td class="cle">Nom</td>
-							<?php echo "<td><input id=\"nom\" class=\"valeur input\" type=\"text\" name=\"nom\" value=\"".((!empty($_POST["nom"]))?$_POST["nom"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"nom\" class=\"valeur input\" type=\"text\" name=\"nom\" maxlength=\"100\" value=\"".((!empty($_POST["nom"]))?$_POST["nom"]:'')."\"/></td>";?>
 						</tr>
 						<tr>
 							<td class="cle">Prénom</td>
-							<?php echo "<td><input id=\"prenom\" class=\"valeur input\" type=\"text\" name=\"prenom\" value=\"".((!empty($_POST["prenom"]))?$_POST["prenom"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"prenom\" class=\"valeur input\" type=\"text\" name=\"prenom\" maxlength=\"100\" value=\"".((!empty($_POST["prenom"]))?$_POST["prenom"]:'')."\"/></td>";?>
 						</tr>
 						<tr>
 							<td class="cle">Email</td>
-							<?php echo "<td><input id=\"email\" class=\"valeur input\" type=\"text\" name=\"email\" value=\"".((!empty($_POST["email"]))?$_POST["email"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"email\" class=\"valeur input\" type=\"text\" name=\"email\" maxlength=\"300\" value=\"".((!empty($_POST["email"]))?$_POST["email"]:'')."\"/></td>";?>
 						</tr>
 						<tr>
 							<td class="cle">Téléphone</td>
-							<?php echo "<td><input id=\"tel\" class=\"valeur input\" type=\"text\" name=\"tel\" value=\"".((!empty($_POST["tel"]))?$_POST["tel"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"tel\" class=\"valeur input\" type=\"text\" name=\"tel\" maxlength=\"10\" value=\"".((!empty($_POST["tel"]))?$_POST["tel"]:'')."\"/></td>";?>
 						</tr>
 						<tr>
 							<td id="c1" class="cle">Adresse</td>
-							<?php echo "<td><input id=\"adresse\" class=\"valeur input\" type=\"text\" name=\"adresse\" value=\"".((!empty($_POST["adresse"]))?$_POST["adresse"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"adresse\" class=\"valeur input\" type=\"text\" name=\"adresse\" maxlength=\"100\" value=\"".((!empty($_POST["adresse"]))?$_POST["adresse"]:'')."\"/></td>";?>
 						</tr>
 						<tr>
 							<td id="c5" class="cle">Code postal</td>
-							<?php echo "<td><input id=\"code_postal\" class=\"valeur input\" type=\"text\" name=\"code_postal\" value=\"".((!empty($_POST["code_postal"]))?$_POST["code_postal"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"code_postal\" class=\"valeur input\" type=\"text\" name=\"code_postal\" maxlength=\"5\" value=\"".((!empty($_POST["code_postal"]))?$_POST["code_postal"]:'')."\"/></td>";?>
 						</tr>
 						<tr>
 							<td id="c3" class="cle">Ville</td>
-							<?php echo "<td><input id=\"ville\" class=\"valeur input\" type=\"text\" name=\"ville\" value=\"".((!empty($_POST["ville"]))?$_POST["ville"]:'')."\"/></td>";?>
+							<?php echo "<td><input id=\"ville\" class=\"valeur input\" type=\"text\" name=\"ville\" maxlength=\"50\" value=\"".((!empty($_POST["ville"]))?$_POST["ville"]:'')."\"/></td>";?>
 						</tr>
 						<tr id="osm_line">
 							<td class="cle">Adresse valide</td>
@@ -611,7 +611,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 							</td>
 						</tr>
 						<tr><td colspan="2">
-							<?php echo "<textarea placeholder=\"(FACULTATIF) Àjouter des détails sur la prestation demandée\" form=\"MyForm\" wrap=\"soft\" class=\"FormElement input\" name=\"commentaire\" id=\"commentaire\" cols=\"41\" rows=\"4\" style=\"resize: none;\" maxlength=\"100\"></textarea>
+							<?php echo "<textarea placeholder=\"(FACULTATIF) Àjouter des détails sur la prestation demandée\" form=\"MyForm\" wrap=\"soft\" class=\"FormElement input\" name=\"commentaire\" id=\"commentaire\" cols=\"41\" rows=\"4\" style=\"resize: none;\" maxlength=\"250\"></textarea>
 "; ?>
 						</td></tr>
 						<tr><td colspan="2">
@@ -858,16 +858,16 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 					if (document.forms["MyForm"]["statut"].value == "2")
 					{
 						goodInput = verifyInput(/^[0-9]{9}$/,"MyForm","siren","siren",goodInput);
-						goodInput = verifyInput(/^[0-9A-zÀ-ú \-_]+$/,"MyForm","densoc","densoc",goodInput);
+						goodInput = verifyInput(/^[0-9A-zÀ-ú \-_]{1,250}$/,"MyForm","densoc","densoc",goodInput);
 					}
 					goodInput = verifyInput(/^[1-4]$/,"MyForm","group3","service",goodInput);
 					goodInput = verifyInput(/^1|2$/,"MyForm","group4","lieux_service",goodInput);
-					goodInput = verifyInput(/[A-zÀ-ú]+/,"MyForm","nom","nom",goodInput);
-					goodInput = verifyInput(/[A-zÀ-ú]+/,"MyForm","prenom","prenom",goodInput);
+					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","nom","nom",goodInput);
+					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","prenom","prenom",goodInput);
 					goodInput = verifyInput(/^[0-9]{10}$/,"MyForm","tel","tel",goodInput);
 					goodInput = verifyInput(/\S+@\S+\.\S+/,"MyForm","email","email",goodInput);
-					goodInput = verifyInput(/[A-zÀ-ú0-9]+/,"MyForm","adresse","adresse",goodInput);
-					goodInput = verifyInput(/[A-z\-À-ú ]+/,"MyForm","ville","ville",goodInput); 
+					goodInput = verifyInput(/[A-zÀ-ú0-9]{1,100}/,"MyForm","adresse","adresse",goodInput);
+					goodInput = verifyInput(/[A-z\-À-ú ]{1,50}/,"MyForm","ville","ville",goodInput); 
 					goodInput = verifyInput(/^[0-9]{5}$/,"MyForm","code_postal","code_postal",goodInput);
 					goodInput = verifyInput_gps("MyForm","group6","gps",goodInput);
 					goodInput = verifyInput(/^[À-úA-z\-\.:;\?\'\"\n 0-9<>]{0,100}$/,"MyForm","commentaire","commentaire",goodInput);
@@ -925,7 +925,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 								} else { $confi = FALSE;}
 								if (!empty($_POST["siren"])) {
 									$siren=filter_var($_POST['siren'],FILTER_VALIDATE_INT);
-									if (preg_match("/[0-9]{9}/",$siren)) { $confi = $confi AND TRUE; }
+									if (preg_match("/^[0-9]{9}$/",$siren)) { $confi = $confi AND TRUE; }
 									else { $confi = FALSE; }
 									$confi = $confi AND TRUE;
 								} else { $confi = FALSE;}
