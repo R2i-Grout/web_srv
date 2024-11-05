@@ -542,8 +542,16 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 							<td>
 								<fieldset id="group3">
 									<div>
+										<input type="radio" id="diagetdem" name="service" value="5" />
+										<label class="label" for="diagetdem">Diagnostique d'ordinateur et démonstration du produit</label>
+									</div>
+									<div>
 										<input type="radio" id="diag" name="service" value="1" />
 										<label class="label" for="diag">Diagnostique d'ordinateur</label>
+									</div>
+									<div>
+										<input type="radio" id="dem" name="service" value="6" />
+										<label class="label" for="dem">Démonstration du produit</label>
 									</div>
 									<div>
 										<input type="radio" id="repa" name="service" value="2" />
@@ -671,6 +679,23 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 ,[47.38621755379421,0.65004828651744],[47.386647573960445,0.6498541443973693],[47.38707759412667,0.6496600022772987],[47.3875076142929,0.6494658601572281],[47.38793763445913,0.6492717180371574],[47.388367654625355,0.6490775759170868],[47.38879767479158,0.6488834337970163],[47.38922769495781,0.6486892916769457],[47.38965771512404,0.648495149556875],[47.390087735290265,0.6483010074368044],[47.390133945925356,0.6482801446229871],[47.390575413227246,0.648153929506369],[47.39101688052913,0.6480277143897507],[47.39145834783102,0.6479014992731326],[47.3918998151329,0.6477752841565144],[47.39234128243479,0.6476490690398963],[47.392782749736675,0.647522853923278],[47.393224217038565,0.6473966388066599],[47.39345471363956,0.6473307400294459],[47.39350899169679,0.6475928855649329]]
 				
 				
+				
+				document.getElementById("group3").addEventListener("change", function(e) {
+					if (document.forms["MyForm"]["service"].value == "5" || document.forms["MyForm"]["service"].value == "6")
+					{
+						document.getElementById("dom").checked=true;
+						document.getElementById("par").disabled=true;
+						document.getElementById("par").labels[0].style="text-decoration:line-through"
+					}
+					else
+					{
+						document.getElementById("par").disabled=false;
+						document.getElementById("par").labels[0].style="text-decoration:none"
+					}
+					document.getElementById("group4").dispatchEvent(new Event('change'));
+					check();
+				});
+				
 				document.getElementById('1111').addEventListener('click', function(e) {
 					if (e.target.attributes[1].nodeValue != 1111)
 					{
@@ -749,7 +774,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						findAdress();
 					} else {
 						if (typeof(document.forms["MyForm"]["gps"]) != "undefined") { document.forms["MyForm"]["gps"].value=""; }
-						document.getElementById('group6').innerHTML="Veuillez correctement renseigner l'adresse, le code postal et la ville.";
+						document.getElementById('group6').innerHTML="<p style=\"color:black\">Veuillez correctement renseigner l'adresse, le code postal et la ville.<p>";
 					}
 				}
 				document.getElementById("group4").addEventListener("change", function(e) {
@@ -860,7 +885,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						goodInput = verifyInput(/^[0-9]{9}$/,"MyForm","siren","siren",goodInput);
 						goodInput = verifyInput(/^[0-9A-zÀ-ú \-_]{1,250}$/,"MyForm","densoc","densoc",goodInput);
 					}
-					goodInput = verifyInput(/^[1-4]$/,"MyForm","group3","service",goodInput);
+					goodInput = verifyInput(/^[1-6]$/,"MyForm","group3","service",goodInput);
 					goodInput = verifyInput(/^1|2$/,"MyForm","group4","lieux_service",goodInput);
 					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","nom","nom",goodInput);
 					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","prenom","prenom",goodInput);
@@ -933,7 +958,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						} else { $confi = FALSE;}
 						if (!empty($_POST["service"])) {
 							$service=filter_var($_POST['service'],FILTER_SANITIZE_STRING);
-							if(in_array($service,array("1","2","3","4"),TRUE)) { $confi = $confi AND TRUE; }
+							if(in_array($service,array("1","2","3","4","5","6"),TRUE)) { $confi = $confi AND TRUE; }
 							else {$confi = FALSE; }
 						} else { $confi = FALSE;}
 						if (!empty($_POST["lieux_service"])) {
@@ -941,6 +966,11 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 							if(in_array($lieux_service,array("1","2"),TRUE)) { $confi = $confi AND TRUE; }
 							else {$confi = FALSE;}
 							
+							if (($_POST["service"] == "5") || ($_POST["service"] == "6"))
+							{
+								if ($_POST["lieux_service"] == "1") { $confi = $confi AND TRUE; }
+								else { $confi = FALSE; }
+							}
 							#if ($_POST["lieux_service"] == "1")
 							#{
 							#	osm_id ? + BDD ?	
@@ -1019,7 +1049,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 					$confirmation=filter_var($_GET['confirmation'],FILTER_SANITIZE_STRING);
 					if(preg_match("/[a-z0-9]{64}/",$confirmation)) {
 						$result = $link->exec('UPDATE '.$nomtablecreneau.' SET confirmation=1,evt_confirmation=1,hash_confirmation=NULL,hash_annulation_client=SHA2(concat(numero_telephone,id,CURRENT_DATE,CURRENT_TIME),256), hash_annulation_perso=SHA2(CONCAT(id,HEX(RANDOM_BYTES(8))),256) WHERE confirmation=0 AND hash_confirmation="'.$confirmation.'"');
-						print_r($result);
+						#print_r($result);
 						if ($result > 0) {
 							echo '<p>La demande de réservation de créneau est bien confirmée.<br>L\'acceptation du devis est validée</p>';
 						}  else if ($result == 0) {

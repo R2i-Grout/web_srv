@@ -195,6 +195,23 @@ BEGIN  {
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>50.00€<td></tr>\n",devis);
 			}
 		}
+		if (SERVICE=="5")
+		{
+			devis=sprintf("%s        <tr><td>Démonstration du produit</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>0.00€</td></tr>",devis);
+			if (LIEUX_SERVICE=="1") {
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
+			}
+		}
+		if (SERVICE=="6")
+		{
+			devis=sprintf("%s        <tr><td>Diagnostic et démonstration du produit</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>0.00€</td></tr>",devis);
+			if (LIEUX_SERVICE=="1") {
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
+			}
+		}
+		
 		if (length(devis) > 0) { gsub(/\[DEVIS\]/,devis,$0); }
 		
 		client="";
