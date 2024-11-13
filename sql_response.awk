@@ -55,7 +55,7 @@ BEGIN  {
 	timestamp2=substr(timestamp2,0,length(timestamp2)-6);
 	if (traitement=="demande_confirmation_5m")
 	{
-		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
+		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
 			#$(cat /proc/sys/kernel/random/uuid)
@@ -70,15 +70,20 @@ BEGIN  {
 			FILE_NAME=sprintf("D-%s.pdf",timestamp2);
 						
 			#PDF - Replace .html PUIS génération .pdf PUIS insertion base 64 PUIS fermeture boundary_mixed
-			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" -v LIEUX_SERVICE=\"%s\" -v STATUT=\"%s\" -v DENSEC=\"%s\" -v SIREN=\"%s\" /home/modele_devis.html > /home/D-%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],a[15],a[16],a[17],a[18],timestamp2);
+			
+			sprintf("ls D*\\.html |wc -l |{ read line;for i in $line;do echo -n \"$((i +1))\";done;echo; }") | getline NUMERO_DEVIS
+			#ls D*\.html |wc -l |{ read line;for i in $line;do echo -n "$((i +1))";done;echo; }
+			close(cmd);
+			
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" -v LIEUX_SERVICE=\"%s\" -v STATUT=\"%s\" -v DENSEC=\"%s\" -v SIREN=\"%s\" -v YEAR=\"%s\" -v NUMERO_DEVIS=\"%s\" -v DATE_DEVIS=\"%s\" -v DATE_VALID_FIN_DEVIS=\"%s\" /home/modele_devis.html > /home/D%s-%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],a[15],a[16],a[17],a[18],NUMERO_DEVIS,a[19],a[20],a[21],a[19],NUMERO_DEVIS);
 			#D pour Devis, F pour Facture
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
-			output=sprintf("wkhtmltopdf /home/D-%s.html /home/D-%s.pdf", timestamp2,timestamp2);
+			output=sprintf("wkhtmltopdf /home/D%s-%s.html /home/D%s-%s.pdf", a[19], NUMERO_DEVIS,a[19],NUMERO_DEVIS);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			cmd=sprintf("file --mime-type /home/D-%s.pdf | sed 's/.*: //'",timestamp2);
+			cmd=sprintf("file --mime-type /home/D%s-%s.pdf | sed 's/.*: //'",a[19], NUMERO_DEVIS);
 			cmd | getline FILE_TYPE
 			close(cmd);
 			
@@ -86,7 +91,7 @@ BEGIN  {
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			output=sprintf("base64 \"/home/D-%s.pdf\" >> \"/home/body_%s_%s.eml\"", timestamp2,traitement,timestamp2);
+			output=sprintf("base64 \"/home/D%s-%s.pdf\" >> \"/home/body_%s_%s.eml\"", a[19], NUMERO_DEVIS,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
@@ -155,9 +160,9 @@ BEGIN  {
 	{
 		devis="";
 		if (SERVICE=="1") {
-			devis=sprintf("%s        <tr><td>Diagnostique de panne</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>0.00€</td></tr>",devis);
+			devis=sprintf("%s        <tr><td>Diagnostique de panne</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>0.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="1") {
-				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>15.00€<td></tr>\n",devis);
 			}
 			if (LIEUX_SERVICE=="2") {
@@ -165,9 +170,9 @@ BEGIN  {
 			}
 		}
 		if (SERVICE=="2") {
-			devis=sprintf("%s        <tr><td>Réparation d'ordinateur</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>50.00€</td></tr>",devis);
+			devis=sprintf("%s        <tr><td>Réparation d'ordinateur</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>50.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="1") {
-				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
 			}
 			if (LIEUX_SERVICE=="2") {
@@ -175,9 +180,9 @@ BEGIN  {
 			}
 		}
 		if (SERVICE=="3") {
-			devis=sprintf("%s        <tr><td>Installation OS</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>50.00€</td></tr>",devis);
+			devis=sprintf("%s        <tr><td>Installation OS</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>50.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="1") {
-				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
 			}
 			if (LIEUX_SERVICE=="2") {
@@ -186,9 +191,9 @@ BEGIN  {
 		}
 		if (SERVICE=="4")
 		{
-			devis=sprintf("%s        <tr><td>Récupération de données</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>50.00€</td></tr>",devis);
+			devis=sprintf("%s        <tr><td>Récupération de données</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>50.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="1") {
-				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
 			}
 			if (LIEUX_SERVICE=="2") {
@@ -197,17 +202,17 @@ BEGIN  {
 		}
 		if (SERVICE=="5")
 		{
-			devis=sprintf("%s        <tr><td>Démonstration du produit</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>0.00€</td></tr>",devis);
+			devis=sprintf("%s        <tr><td>Démonstration du produit</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>0.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="1") {
-				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
 			}
 		}
 		if (SERVICE=="6")
 		{
-			devis=sprintf("%s        <tr><td>Diagnostic et démonstration du produit</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>0.00€</td></tr>",devis);
+			devis=sprintf("%s        <tr><td>Diagnostic et démonstration du produit</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>0.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="1") {
-				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>heure</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
 			}
 		}
@@ -243,6 +248,11 @@ BEGIN  {
 		
 		if (length(DENSEC) > 0) { $0=gensub(/\[DENSEC\]/,DENSEC,1,$0); }
 		if (length(SIREN) > 0) { $0=gensub(/\[SIREN\]/,SIREN,1,$0); }
+		
+		if (length(YEAR) > 0) { $0=gensub(/\[YEAR\]/,YEAR,1,$0); }
+		if (length(NUMERO_DEVIS) > 0) { $0=gensub(/\[NUMERO_DEVIS\]/,NUMERO_DEVIS,1,$0); }
+		if (length(DATE_DEVIS) > 0) { $0=gensub(/\[DATE_DEVIS\]/,DATE_DEVIS,1,$0); }
+		if (length(DATE_VALID_FIN_DEVIS) > 0) { $0=gensub(/\[DATE_VALID_FIN_DEVIS\]/,DATE_VALID_FIN_DEVIS,1,$0); }
 		
 		if (length(rdv_filename) > 0) { $0=gensub(/\[PAGE_RDV\]/,rdv_filename,1,$0); }
 		
