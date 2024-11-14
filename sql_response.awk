@@ -67,31 +67,31 @@ BEGIN  {
 			close(cmd);
 			printf("\tTEST[%s][%s]\n",BOUNDARY_MIXED,BOUNDARY_ALTERNATIVE);
 			
-			FILE_NAME=sprintf("D-%s.pdf",timestamp2);
-						
 			#PDF - Replace .html PUIS génération .pdf PUIS insertion base 64 PUIS fermeture boundary_mixed
 			
-			sprintf("ls D*\\.html |wc -l |{ read line;for i in $line;do echo -n \"$((i +1))\";done;echo; }") | getline NUMERO_DEVIS
+			sprintf("ls /home/D*\\.html |wc -l |{ read line;for i in $line;do echo -n \"$((i +1))\";done;echo; }") | getline NUMERO_DEVIS
 			#ls D*\.html |wc -l |{ read line;for i in $line;do echo -n "$((i +1))";done;echo; }
 			close(cmd);
 			
-			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" -v LIEUX_SERVICE=\"%s\" -v STATUT=\"%s\" -v DENSEC=\"%s\" -v SIREN=\"%s\" -v YEAR=\"%s\" -v NUMERO_DEVIS=\"%s\" -v DATE_DEVIS=\"%s\" -v DATE_VALID_FIN_DEVIS=\"%s\" /home/modele_devis.html > /home/D%s-%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],a[15],a[16],a[17],a[18],NUMERO_DEVIS,a[19],a[20],a[21],a[19],NUMERO_DEVIS);
+			FILE_NAME=sprintf("D%s-%04d",a[19],NUMERO_DEVIS);
+			
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" -v LIEUX_SERVICE=\"%s\" -v STATUT=\"%s\" -v DENSEC=\"%s\" -v SIREN=\"%s\" -v YEAR=\"%s\" -v NUMERO_DEVIS=\"%s\" -v DATE_DEVIS=\"%s\" -v DATE_VALID_FIN_DEVIS=\"%s\" /home/modele_devis.html > /home/%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],a[15],a[16],a[17],a[18],a[19],NUMERO_DEVIS,a[20],a[21],FILE_NAME);
 			#D pour Devis, F pour Facture
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
-			output=sprintf("wkhtmltopdf /home/D%s-%s.html /home/D%s-%s.pdf", a[19], NUMERO_DEVIS,a[19],NUMERO_DEVIS);
+			output=sprintf("wkhtmltopdf /home/%s.html /home/%s.pdf", FILE_NAME,FILE_NAME);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			cmd=sprintf("file --mime-type /home/D%s-%s.pdf | sed 's/.*: //'",a[19], NUMERO_DEVIS);
+			cmd=sprintf("file --mime-type /home/%s.pdf | sed 's/.*: //'",FILE_NAME);
 			cmd | getline FILE_TYPE
 			close(cmd);
 			
-			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v FILE_TYPE=\"%s\" -v FILE_NAME=\"%s\" -v BOUNDARY_MIXED=\"%s\" /home/modele_%s_1.eml > /home/body_%s_%s.eml", smtp_sender, a[1], toB64("[R2i-Grout][À confirmer] Votre rendez-vous"),FILE_TYPE,FILE_NAME,BOUNDARY_MIXED, traitement,traitement,timestamp2);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v DESTINATAIRE=\"%s\" -v SUBJECT_B64=\"%s\" -v FILE_TYPE=\"%s\" -v FILE_NAME=\"%s.pdf\" -v BOUNDARY_MIXED=\"%s\" /home/modele_%s_1.eml > /home/body_%s_%s.eml", smtp_sender, a[1], toB64("[R2i-Grout][À confirmer] Votre rendez-vous"),FILE_TYPE,FILE_NAME,BOUNDARY_MIXED, traitement,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			
-			output=sprintf("base64 \"/home/D%s-%s.pdf\" >> \"/home/body_%s_%s.eml\"", a[19], NUMERO_DEVIS,traitement,timestamp2);
+			output=sprintf("base64 \"/home/%s.pdf\" >> \"/home/body_%s_%s.eml\"", FILE_NAME,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
 			

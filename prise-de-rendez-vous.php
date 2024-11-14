@@ -326,21 +326,34 @@ if (!empty($_GET['loginAdm'])) {
 	}
 }
 
-if (!empty($_SESSION['LAST_ACTIVITY'])) {
-	if ((time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
-		#1800 s = 30 minutes = 30 * 60, 60 = 60s
-		$_SESSION = array();
-		session_destroy();  // destroy session data in storage
-		#session_unset($_SESSION); // unset $_SESSION variable for the run-time
-		session_unset();
-		header("Refresh:0");
-	}
+function deconnexion() {
+	#1800 s = 30 minutes = 30 * 60, 60 = 60s
+	$_SESSION = array();
+	session_destroy();  // destroy session data in storage
+	#session_unset($_SESSION); // unset $_SESSION variable for the run-time
+	session_unset();
+	header("Refresh:0");
 }
 
 if (!empty($_SESSION)) {
-	if ( $_SESSION['LAST_ACTIVITY']) {
-		echo "<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$adm_pwd."\" target=\"_self\" rel=\"noopener noreferrer\">Accès à la console d'administration</a>
+	if (!empty($_SESSION['LAST_ACTIVITY'])) {
+		if ((time() - $_SESSION['LAST_ACTIVITY'] > 1800)) {
+			deconnexion();
+		} else {
+			echo "<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$adm_pwd."\" target=\"_self\" rel=\"noopener noreferrer\">Accèder à la console d'administration</a>
 ";
+			echo "<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$adm_pwd."&disconnect=true\" target=\"_self\" rel=\"noopener noreferrer\">Déconnexion</a>
+";
+			if (!empty($_GET[$adm_url])) {
+				if ($_GET[$adm_url] == $adm_pwd) {
+					if (!empty($_GET["disconnect"])) {
+						if ($_GET["disconnect"] == "true") {
+							deconnexion();
+						}
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -1075,22 +1088,18 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 					}
 				}
 				if (!empty($_SESSION['LAST_ACTIVITY']) and !empty($_GET[$adm_url])) {
-					echo 'ADMINISTRATION<br/>
-';
-					echo "<table>";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=1\" target=\"_self\" rel=\"noopener noreferrer\">Requête au quotidien</a></td></tr>
+					echo "<table class=\"tableFORM\">";
+					echo "<tr><td colspan=\"2\" class=\"cle\"><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=1\" target=\"_self\" rel=\"noopener noreferrer\">Au quotidien /mois</a></td></tr>
 ";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=2\" target=\"_self\" rel=\"noopener noreferrer\">Requête historique par client</a></td></tr>
+					echo "<tr><td colspan=\"2\" class=\"cle\"><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=2\" target=\"_self\" rel=\"noopener noreferrer\">Historique par client</a></td></tr>
 ";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=3\" target=\"_self\" rel=\"noopener noreferrer\">Requête tous les créneaux du mois => Changer pour créneau non-réservable</a></td></tr>
+					echo "<tr><td colspan=\"2\" class=\"cle\"><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$annee."&mois=".$mois."&req=3\" target=\"_self\" rel=\"noopener noreferrer\">Tous les créneaux /mois</a></td></tr>
 ";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneePREV."&mois=".$moisPREV."&req=".$_GET['req']."\" target=\"_self\" rel=\"noopener noreferrer\">PREV</a></td></tr>
-";
-					echo "<tr><td><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneeNEXT."&mois=".$moisNEXT."&req=".$_GET['req']."\" target=\"_self\" rel=\"noopener noreferrer\">NEXT</a></td></tr>
+					echo "<tr><td class=\"cle\"><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneePREV."&mois=".$moisPREV."&req=".$_GET['req']."\" target=\"_self\" rel=\"noopener noreferrer\"><</a></td><td class=\"cle\"><a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&annee=".$anneeNEXT."&mois=".$moisNEXT."&req=".$_GET['req']."\" target=\"_self\" rel=\"noopener noreferrer\">></a></td></tr>
 ";
 					echo "</table>";
 					if ($_GET['req'] == "1") {
-						$sql6='SELECT * FROM '.$nomtablecreneau.' WHERE LENGTH(nom) AND MONTH(date_creneau)='.$mois.' AND YEAR(date_creneau)='.$annee.' IS NOT NULL ORDER BY DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN';
+						$sql6='SELECT * FROM '.$nomtablecreneau.' WHERE CONFIRMATION=1 AND LENGTH(nom) AND MONTH(date_creneau)='.$mois.' AND YEAR(date_creneau)='.$annee.' IS NOT NULL ORDER BY DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN';
 					}
 					if ($_GET['req'] == "2") {
 						$sql6='SELECT * FROM '.$nomtablecreneau.' WHERE CONCAT(nom,prenom,numero_telephone) REGEXP "'.$_GET['search'].'" ORDER BY numero_telephone,date_creneau,heure_creneau_debut';
@@ -1115,7 +1124,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						}
 					}
 					if (($_GET['req'] == "1") or ($_GET['req'] == "2") or ($_GET['req'] == "3")) {
-						echo "			<table style=\"border-style: solid;\">";
+						echo "			<table class=\"tableFORM\">";
 					}
 					if ($_GET['req'] == "1") {
 						while (($row2 = $statement6->fetch(PDO::FETCH_ASSOC)) !== false) {
