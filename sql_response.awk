@@ -11,6 +11,8 @@ function evtToMutt(evtType,DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN,DA
 	output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,EMAIL,smtp_sender,smtp_pwd,evtType,timestamp2);
 	printf("\t[%s][%s][%s]\n",timestamp2,evtType,output);
 	system(output);
+	
+	notification(timestamp2,smtp_url,smtp_sender,smtp_pwd,toB64(sprintf("[R2i-G][%s][%s %s - %s]",evtType,DATE_CRENEAU,HEURE_CRENEAU_DEBUT,HEURE_CRENEAU_FIN)));
 }
 function toB64(plain_subject)
 {
@@ -23,6 +25,15 @@ function toB64(plain_subject)
 	gsub(/=/,"",subject_b64);
 	return subject_b64;
 }
+function notification(timestamp2,smtp_url,smtp_sender,smtp_pwd,title_B64)
+{
+	output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SENDER=\"%s\" -v SUBJECT_B64=\"%s\" /home/modele_notification.eml > /home/body_notification_%s.eml", smtp_sender, title_B64,timestamp2);
+	printf("\t[%s][NOTIF][%s]\n",timestamp2,output);
+	system(output);
+	output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_notification_%s.eml",smtp_url,smtp_sender,smtp_sender,smtp_sender,smtp_pwd,timestamp2);
+	printf("\t[%s][NOTIF][%s]\n",timestamp2,output);
+	system(output);
+}
 
 BEGIN  {	
 	#printf("=============================================================================================================================\n");
@@ -31,6 +42,8 @@ BEGIN  {
 	smtp_sender="";
 	smtp_pwd="";
 	rdv_filename="";
+	dbname="";
+	nomtablecreneau="";
 	
 	src="/home/cred.txt";
 	cmd=sprintf("cat \"%s\"",src);
@@ -41,6 +54,8 @@ BEGIN  {
 		match(output,/^smtp_sender=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { smtp_sender=sprintf("%s", b[1]); }
 		match(output,/^smtp_pwd=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { smtp_pwd=sprintf("%s", b[1]); }
 		match(output,/^rdv_filename=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { rdv_filename=sprintf("%s", b[1]); }
+		match(output,/^dbname=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { dbname=sprintf("%s", b[1]); }
+		match(output,/^nomtablecreneau=(.*)$/,b); if (RLENGTH != -1 && RSTART != 0) { nomtablecreneau=sprintf("%s", b[1]); }
 	}
 	
 	#printf("smtp_url=[%s]\n",smtp_url);
@@ -55,7 +70,7 @@ BEGIN  {
 	timestamp2=substr(timestamp2,0,length(timestamp2)-6);
 	if (traitement=="demande_confirmation_5m")
 	{
-		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
+		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
 			#$(cat /proc/sys/kernel/random/uuid)
@@ -102,6 +117,12 @@ BEGIN  {
 			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
+			
+			output=sprintf("sudo mysql -D %s -e \"UPDATE %s SET DEVIS='%s' WHERE id = %s;\"",dbname,nomtablecreneau,FILE_NAME,a[22]);
+			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
+			system(output);
+			
+			notification(timestamp2,smtp_url,smtp_sender,smtp_pwd,toB64(sprintf("[R2i-G][RDV-CONF][%s]",a[23])));
 		}
 	}
 	if (traitement=="lettre_info_5m")
@@ -115,6 +136,7 @@ BEGIN  {
 			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
+			notification(timestamp2,smtp_url,smtp_sender,smtp_pwd,toB64(sprintf("[R2i-G][RDV-LE-IN][%s]",a[1])));
 		}
 	}
 	if (traitement=="2fa_5m")
@@ -128,6 +150,7 @@ BEGIN  {
 			output=sprintf("curl --url '%s' --ssl-reqd --mail-from '%s' --mail-rcpt '%s' --user '%s:%s' -T /home/body_%s_%s.eml",smtp_url,smtp_sender,a[1],smtp_sender,smtp_pwd,traitement,timestamp2);
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
+			notification(timestamp2,smtp_url,smtp_sender,smtp_pwd,toB64(sprintf("[R2i-G][RDV-2FA][%s]",a[1])));
 		}
 	}
 	if (traitement=="evt_5m")
@@ -214,6 +237,17 @@ BEGIN  {
 			if (LIEUX_SERVICE=="1") {
 				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
+			}
+		}
+		if (SERVICE=="7")
+		{
+			devis=sprintf("%s        <tr><td>Nettoyage Windows</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>50.00€</td></tr>",devis);
+			if (LIEUX_SERVICE=="1") {
+				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
+			}
+			if (LIEUX_SERVICE=="2") {
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>50.00€<td></tr>\n",devis);
 			}
 		}
 		

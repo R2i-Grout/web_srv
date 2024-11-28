@@ -205,8 +205,8 @@ echo	"<form id=\"TE\" method=\"post\"".(($hideForm)?" style=\"display: none\"":"
 				<div id="image" selectable="False"><?php echo $test;?></div>
 			</td></tr>
 			<tr><td>
-				<p>Par exemple, pour "ЌЏНЀМЁЇТ" il faut simplement saisir "KUHEMEIT".</p>
-				<input type="text" id="C" name="captcha" placeholder="Renseigner le captcha ci-dessus" />
+				<p>Saisir "HKUEI" pour "HЌЏЀЇ".</p>
+				<input type="text" id="C" name="captcha" placeholder="Saisir HKUEI pour HЌЏЀЇ" />
                		</td></tr>
 			<tr>
 				<td><button id="B" type="button">Envoyer le formulaire</button></td>

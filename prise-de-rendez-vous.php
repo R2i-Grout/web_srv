@@ -281,8 +281,8 @@ catch (Exception $e) {
 	exit('Something bad happened'); 
 }
 
-function generateAuthForm($url,$pwd) {
-	echo "<form method=\"post\"><input type=\"text\" name=\"email\"><input type=\"password\" name=\"pwd\"><input formaction=\"?".$url."=".$pwd."\" type=\"submit\"></form>";
+function generateAuthForm($url,$pwd,$domainname,$rdv_filename) {
+	echo "<form method=\"post\"><input type=\"text\" name=\"email\"><input type=\"password\" name=\"pwd\"><input formaction=\"?".$url."=".$pwd."\" type=\"submit\"></form><a href=\"https://".$domainname."/".$rdv_filename."\" target=\"_self\" rel=\"noopener noreferrer\">Sortir de la page de connexion</a>";
 }
 
 if (!empty($_GET[$adm_url])) {
@@ -304,9 +304,9 @@ if (!empty($_GET[$adm_url])) {
 					} else {
 						echo '<p>Echec de la tentative de création du lien</p>';
 					}
-				} else { generateAuthForm($adm_url,$adm_pwd); }
+				} else { generateAuthForm($adm_url,$adm_pwd,$domainname,$rdv_filename); }
 			} else {
-				generateAuthForm($adm_url,$adm_pwd);
+				generateAuthForm($adm_url,$adm_pwd,$domainname,$rdv_filename);
 			}
 		}
 	}
@@ -569,6 +569,10 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 									<div>
 										<input type="radio" id="repa" name="service" value="2" />
 										<label class="label" for="repa">Réparation d'ordinateur</label>
+									</div>
+									<div>
+										<input type="radio" id="nettoy" name="service" value="7" />
+										<label class="label" for="nettoy">Nettoyage Windows</label>
 									</div>
 									<div>
 										<input type="radio" id="install" name="service" value="3" />
@@ -898,7 +902,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						goodInput = verifyInput(/^[0-9]{9}$/,"MyForm","siren","siren",goodInput);
 						goodInput = verifyInput(/^[0-9A-zÀ-ú \-_]{1,250}$/,"MyForm","densoc","densoc",goodInput);
 					}
-					goodInput = verifyInput(/^[1-6]$/,"MyForm","group3","service",goodInput);
+					goodInput = verifyInput(/^[1-7]$/,"MyForm","group3","service",goodInput);
 					goodInput = verifyInput(/^1|2$/,"MyForm","group4","lieux_service",goodInput);
 					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","nom","nom",goodInput);
 					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","prenom","prenom",goodInput);
@@ -971,7 +975,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						} else { $confi = FALSE;}
 						if (!empty($_POST["service"])) {
 							$service=filter_var($_POST['service'],FILTER_SANITIZE_STRING);
-							if(in_array($service,array("1","2","3","4","5","6"),TRUE)) { $confi = $confi AND TRUE; }
+							if(in_array($service,array("1","2","3","4","5","6","7"),TRUE)) { $confi = $confi AND TRUE; }
 							else {$confi = FALSE; }
 						} else { $confi = FALSE;}
 						if (!empty($_POST["lieux_service"])) {
@@ -1114,6 +1118,29 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						$sql6='UPDATE '.$nomtablecreneau.' SET CRENEAU_RESERVABLE=NOT CRENEAU_RESERVABLE WHERE id='.$_GET['id'];
 						echo $sql6;
 					}
+					if ($_GET['req'] == "6") {
+						#and !empty($_GET['devis'])
+						echo '<p>DEVIS=['.$_GET['devis'].']</p>';
+						$devis=filter_var($_GET['devis'],FILTER_SANITIZE_STRING);
+						echo '<p>DEVIS2=['.$devis.']</p>';
+						if (preg_match("/D[0-9]{4}\-[0-9]{4}/",$devis)) {
+							if (file_exists('/home/'.$devis.'.pdf')) {
+								header('HTTP/1.0 200 OK', true, 200);
+								header("Content-type: application/pdf");
+								header('Content-disposition: inline; filename="'.$devis.'.pdf"');
+								header('content-Transfer-Encoding:binary');
+								header('Accept-Ranges:bytes');
+								readfile('/home/'.$devis.'.pdf');
+							} else {
+								echo "<p>The file /home/$devis.pdf does not exist (ERR:2)</p>";
+								die();
+							}
+						}
+						else {
+							echo "<p>The file /home/$devis.pdf does not exist (ERR:1)</pdf>";
+							die();
+						}
+					}
 					if (($_GET['req'] == "1") or ($_GET['req'] == "2") or ($_GET['req'] == "3") or ($_GET['req'] == "4") or ($_GET['req'] == "5")) {	
 						try {
 							$statement6 = $link->prepare($sql6);
@@ -1139,7 +1166,8 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 								"<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&req=4&token_bis=".$row2['HASH_ANNULATION_PERSO']."\" target=\"_blank\" rel=\"noopener noreferrer\">AN PERSO</a>",
 								$row2['EVT_ANNULATION_CLIENT'],
 								"<a href=\"https://".$domainname."/".$rdv_filename."?token=".$row2['HASH_ANNULATION_CLIENT']."\" target=\"_blank\" rel=\"noopener noreferrer\">AN CLIENT</a>",
-								"<a href=\"https://www.openstreetmap.org/search?query=".str_replace(" ","%20",($row2['ADRESSE'].' '.$row2['VILLE'].' '.$row2['CODE_POSTAL']))."\" target=\"_blank\" rel=\"noopener noreferrer\">LOC</a>"
+								"<a href=\"https://www.openstreetmap.org/search?query=".str_replace(" ","%20",($row2['ADRESSE'].' '.$row2['VILLE'].' '.$row2['CODE_POSTAL']))."\" target=\"_blank\" rel=\"noopener noreferrer\">LOC</a>",
+								"<a href=\"https://".$domainname."/".$rdv_filename."?".$adm_url."=".$_GET[$adm_url]."&req=6&devis=".$row2['DEVIS']."\" target=\"_blank\" rel=\"noopener noreferrer\">DEVIS</a>"
 							));
 						}
 					}
