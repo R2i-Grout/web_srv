@@ -29,8 +29,6 @@ session_start();
 #echo shell_exec('printenv;pwd;ls').'<br />';
 #echo var_dump($_POST)."<br />";
 
-#AJOUT <a><presta>...-> echo $presta
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -576,7 +574,11 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 									</div>
 									<div>
 										<input type="radio" id="install" name="service" value="3" />
-										<label class="label" for="install">Installation de Linux</label>
+										<label class="label" for="install">Installation de Linux sur ordinateur</label>
+									</div>
+									<div>
+										<input type="radio" id="install_tel" name="service" value="8" />
+										<label class="label" for="install_tel">Installation de Linux sur téléphone</label>
 									</div>
 									<div>
 										<input type="radio" id="recup" name="service" value="4" />
@@ -698,17 +700,23 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 				
 				
 				document.getElementById("group3").addEventListener("change", function(e) {
+					document.getElementById("par").disabled=false;
+					document.getElementById("par").labels[0].style="text-decoration:none"
+					document.getElementById("dom").disabled=false;
+					document.getElementById("dom").labels[0].style="text-decoration:none"
 					if (document.forms["MyForm"]["service"].value == "5" || document.forms["MyForm"]["service"].value == "6")
 					{
 						document.getElementById("dom").checked=true;
 						document.getElementById("par").disabled=true;
 						document.getElementById("par").labels[0].style="text-decoration:line-through"
 					}
-					else
+					if (document.forms["MyForm"]["service"].value == "8")
 					{
-						document.getElementById("par").disabled=false;
-						document.getElementById("par").labels[0].style="text-decoration:none"
+						document.getElementById("par").checked=true;
+						document.getElementById("dom").disabled=true;
+						document.getElementById("dom").labels[0].style="text-decoration:line-through"
 					}
+					
 					document.getElementById("group4").dispatchEvent(new Event('change'));
 					check();
 				});
@@ -902,7 +910,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						goodInput = verifyInput(/^[0-9]{9}$/,"MyForm","siren","siren",goodInput);
 						goodInput = verifyInput(/^[0-9A-zÀ-ú \-_]{1,250}$/,"MyForm","densoc","densoc",goodInput);
 					}
-					goodInput = verifyInput(/^[1-7]$/,"MyForm","group3","service",goodInput);
+					goodInput = verifyInput(/^[1-8]$/,"MyForm","group3","service",goodInput);
 					goodInput = verifyInput(/^1|2$/,"MyForm","group4","lieux_service",goodInput);
 					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","nom","nom",goodInput);
 					goodInput = verifyInput(/[A-zÀ-ú\- ]{1,100}/,"MyForm","prenom","prenom",goodInput);
@@ -975,7 +983,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 						} else { $confi = FALSE;}
 						if (!empty($_POST["service"])) {
 							$service=filter_var($_POST['service'],FILTER_SANITIZE_STRING);
-							if(in_array($service,array("1","2","3","4","5","6","7"),TRUE)) { $confi = $confi AND TRUE; }
+							if(in_array($service,array("1","2","3","4","5","6","7","8"),TRUE)) { $confi = $confi AND TRUE; }
 							else {$confi = FALSE; }
 						} else { $confi = FALSE;}
 						if (!empty($_POST["lieux_service"])) {
@@ -986,6 +994,11 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 							if (($_POST["service"] == "5") || ($_POST["service"] == "6"))
 							{
 								if ($_POST["lieux_service"] == "1") { $confi = $confi AND TRUE; }
+								else { $confi = FALSE; }
+							}
+							else if (($_POST["service"] == "8"))
+							{
+								if ($_POST["lieux_service"] == "2") { $confi = $confi AND TRUE; }
 								else { $confi = FALSE; }
 							}
 							#if ($_POST["lieux_service"] == "1")

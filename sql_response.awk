@@ -203,7 +203,7 @@ BEGIN  {
 			}
 		}
 		if (SERVICE=="3") {
-			devis=sprintf("%s        <tr><td>Installation OS</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>50.00€</td></tr>",devis);
+			devis=sprintf("%s        <tr><td>Installation Linux sur ordinateur</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>50.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="1") {
 				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
@@ -246,6 +246,13 @@ BEGIN  {
 				devis=sprintf("%s        <tr><td>Frais de déplacement</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>15.00€</td></tr>",devis);
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>65.00€<td></tr>\n",devis);
 			}
+			if (LIEUX_SERVICE=="2") {
+				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>50.00€<td></tr>\n",devis);
+			}
+		}
+		if (SERVICE=="8")
+		{
+			devis=sprintf("%s        <tr><td>Installation de Linux sur téléphone</td><td>[DATE_CRENEAU]</td><td>1</td><td>forfaitaire</td><td>50.00€</td></tr>",devis);
 			if (LIEUX_SERVICE=="2") {
 				devis=sprintf("%s\n    </table>\n    </br>\n    <table class=\"entete3\">\n      </tr><td>Total net de TVA</td><td>50.00€<td></tr>\n",devis);
 			}
