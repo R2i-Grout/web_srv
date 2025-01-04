@@ -300,7 +300,6 @@ if (!empty($_GET['loginAdm'])) {
 }
 
 function deconnexion() {
-	#1800 s = 30 minutes = 30 * 60, 60 = 60s
 	$_SESSION = array();
 	session_destroy();  // destroy session data in storage
 	#session_unset($_SESSION); // unset $_SESSION variable for the run-time
