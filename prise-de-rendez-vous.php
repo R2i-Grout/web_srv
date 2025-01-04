@@ -1,34 +1,10 @@
 <?php
 session_start();
-
-#ini_set('session.cookie_lifetime', '0');
-#ini_set('session.cache_expire', '1800');
-#ini_set('session.use_strict_mode', 'true');
-#ini_set('session.use_trans_sid', 'false');
-#ini_set('session_cache_limiter', 'nocache');
-#ini_set('session.name', 'R2IGROUT');
-#ini_set('session.sid_length', '256');
-#ini_set('session.sid_bits_per_character', '6');
-#ini_set('session.hash_function', '1');
-#ini_set('session.hash_bits_per_character', '6');
-#ini_set('session.entropy_file', '/dev/urandom');
-#ini_set('session.use_cookies', 'true');
-#ini_set('session.cookie_httponly', 'true');
-#ini_set('session.use_only_cookies', 'true');
-#ini_set('session.cookie_secure', 'true');
-#date.timezone = "Europe/Paris"
-
-#https://www.php.net/manual/fr/session.configuration.php
 #cat /dev/urandom  |hexdump
 #print_r($_SESSION);
-
-# php -f /var/www/html/mariadb.php
-#sudo touch /var/www/html/test_log.txt
-#sudo chown www-data:www-data /var/www/html/test_log.txt
-#sudo ls -la /var/www/html/test_log.txt
+#php -f /var/www/html/mariadb.php
 #echo shell_exec('printenv;pwd;ls').'<br />';
 #echo var_dump($_POST)."<br />";
-
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -47,7 +23,6 @@ session_start();
 	
 	<meta name="title" content="Prendre rendez-vous chez R2i-Grout">
 	<meta name="robots" content="index,follow">
-	
 	
 	<title>Formulaire d'enregistrement</title>
 	<?php require_once($_SERVER['DOCUMENT_ROOT'].'/wp-load.php'); wp_head(); get_header(); ?>
@@ -771,11 +746,8 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 				ET EVITER Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource
 				XHR - Console Firefox
 				
-				xhr.open('GET', , true);
 				xhr.setRequestHeader()
 				xhr.responseType = 'json';
-				xhr.onload = function() {
-				xhr.send(null);
 				*/
 				
 				function findAdress(){

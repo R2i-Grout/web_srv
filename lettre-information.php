@@ -168,7 +168,6 @@ $test=json_decode('"'.$generated_captcha_displayed.'"');
 
 $_SESSION['generated_captcha_expected'] = $generated_captcha_expected;
 $generated_captcha_displayed = $charset_displayed;
-#ALTCHA ? pas reCAPTCHA gros problème de RGPD
 
 if (!empty($_GET['token'])) {
 	$hash_conf = filter_var($_GET['token'],FILTER_SANITIZE_STRING);
