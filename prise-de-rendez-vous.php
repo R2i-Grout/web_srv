@@ -745,6 +745,9 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 				ET EVITER Cross-Origin Request Blocked: The Same Origin Policy disallows reading the remote resource
 				XHR - Console Firefox
 				
+				Firefox > Browser Privacy : Strict -> Standard
+					=> Allow cross-site cookies so maybe also call to OSM API to get adress
+				
 				xhr.setRequestHeader()
 				xhr.responseType = 'json';
 				*/
@@ -1033,7 +1036,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 							
 							print_r($result);
 							if ($result > 0) {
-								echo '<p>Demande de réservation envoyée. Vous allez recevoir un mail de confirmation prochainement.</p>';
+								echo '<p>Demande de réservation envoyée.<br>Vous allez recevoir prochainement un mail, contenant :<ul><li><b>un lien de confirmation à cliquer</b></li><li>ainsi qu\'un <b>devis en pièce jointe</b></li></ul></p>';
 							} else if ($result == 0) {
 								echo '<p>Le lien a expiré.</p>';
 							} else {

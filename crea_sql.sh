@@ -13,21 +13,13 @@
 
 PATH_CRED="/home/cred.txt"
 dbname=$(sed -n 's/^dbname=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "dbname=[${dbname}]";
 dbhost=$(sed -n 's/^dbhost=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "dbhost=[${dbhost}]";
 dbpass=$(sed -n 's/^dbpass=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "dbpass=[${dbpass}]";
 dbuser=$(sed -n 's/^dbuser=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "dbuser=[${dbuser}]";
 db_table_rdv=$(sed -n 's/^db_table_rdv=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "db_table_rdv=[${db_table_rdv}]";
 db_table_li=$(sed -n 's/^db_table_li=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "db_table_li=[${db_table_li}]";
 db_table_2fa=$(sed -n 's/^db_table_2fa=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "db_table_2fa=[${db_table_2fa}]";
 auth_email=$(sed -n 's/^auth_email=\(.*\)/\1/p' < "${PATH_CRED}");
-echo "auth_email=[${auth_email}]";
 auth_pwd=$(sed -n 's/^auth_pwd=\(.*\)/\1/p' < "${PATH_CRED}");
 echo "auth_pwd=[${auth_pwd}]";
 

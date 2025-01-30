@@ -70,7 +70,7 @@ BEGIN  {
 	timestamp2=substr(timestamp2,0,length(timestamp2)-6);
 	if (traitement=="demande_confirmation_5m")
 	{
-		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
+		match($0,/"([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)","([^"]*)"/,a);
 		if (RLENGTH != -1 && RSTART != 0)
 		{
 			#$(cat /proc/sys/kernel/random/uuid)
@@ -90,7 +90,7 @@ BEGIN  {
 			
 			FILE_NAME=sprintf("D%s-%04d",a[19],NUMERO_DEVIS);
 			
-			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" -v LIEUX_SERVICE=\"%s\" -v STATUT=\"%s\" -v DENSEC=\"%s\" -v SIREN=\"%s\" -v YEAR=\"%s\" -v NUMERO_DEVIS=\"%s\" -v DATE_DEVIS=\"%s\" -v DATE_VALID_FIN_DEVIS=\"%s\" /home/modele_devis.html > /home/%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],a[15],a[16],a[17],a[18],a[19],NUMERO_DEVIS,a[20],a[21],FILE_NAME);
+			output=sprintf("gawk -f /home/sql_response.awk -v traitement=\"field_replace_csvToBody\" -v SERVICE=\"%s\" -v NOM=\"%s\" -v PRENOM=\"%s\" -v ADRESSE=\"%s\" -v CODE_POSTAL=\"%s\" -v VILLE=\"%s\" -v EMAIL=\"%s\" -v DATE_CRENEAU=\"%s\" -v LIEUX_SERVICE=\"%s\" -v STATUT=\"%s\" -v DENSEC=\"%s\" -v SIREN=\"%s\" -v YEAR=\"%s\" -v NUMERO_DEVIS=\"%s\" -v DATE_DEVIS=\"%s\" -v DATE_VALID_FIN_DEVIS=\"%s\" -v NUMERO_TELEPHONE=\"%s\" /home/modele_devis.html > /home/%s.html",a[4],a[5],a[6],a[7],a[8],a[9],a[1],a[11],a[15],a[16],a[17],a[18],a[19],NUMERO_DEVIS,a[20],a[21],a[24],FILE_NAME);
 			#D pour Devis, F pour Facture
 			printf("\t[%s][%s][%s]\n",timestamp2,traitement,output);
 			system(output);
