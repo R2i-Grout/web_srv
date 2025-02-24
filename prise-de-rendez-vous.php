@@ -571,7 +571,7 @@ while ($dateMAXM->format('N') < $dateMAX->format('N')) {
 									</div>
 									<div>
 										<input type="radio" id="par" name="lieux_service" value="2" />
-										<label class="label" for="par">Vous déposez votre matériel informatique au 24 rue Lamartine, 37000, TOURS</br>&ensp;- Pas de frais de déplacement</br>&ensp;- R2i-Grout vous avertira par téléphone quand le matériel sera prêt à être récupéré</label>
+										<label class="label" for="par">Vous déposez votre matériel informatique au 24 rue Berthelot, 37000, TOURS</br>&ensp;- Pas de frais de déplacement</br>&ensp;- R2i-Grout vous avertira par téléphone quand le matériel sera prêt à être récupéré</label>
 									</div>
 								</fieldset>
 							</td>
